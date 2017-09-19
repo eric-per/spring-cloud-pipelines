@@ -522,24 +522,31 @@ function portFromKubernetes() {
 
 function waitForAppToStart() {
     local appName="${1}"
-    local apiUrlVar="PAAS_${ENVIRONMENT}_API_URL"
-    local apiUrl="${!apiUrlVar}"
     local port
     port="$( portFromKubernetes "${appName}" )"
     local kubHost
-    kubHost="$( hostFromApi "${apiUrl}" )"
+    kubHost="$( applicationUrl "${appName}" )"
     isAppRunning "${kubHost}" "${port}"
+}
+
+function portFromKubernetes() {
+    local appName="${1}"
+    local jsonPath
+    if [[ "${KUBERNETES_MINIKUBE}" == "true" ]]; then
+        jsonPath="'{.spec.ports[0].nodePort}'"
+    else
+        jsonPath="'{.spec.ports[0].port}'"
+    fi
+    kubectl --context="${K8S_CONTEXT}" --namespace="${PAAS_NAMESPACE}" get svc "${appName}" -o jsonpath="${jsonPath}"
 }
 
 function retrieveApplicationUrl() {
     local appName
     appName="$( retrieveAppName )"
-    local apiUrlVar="PAAS_${ENVIRONMENT}_API_URL"
-    local apiUrl="${!apiUrlVar}"
     local port
     port="$( portFromKubernetes "${appName}" )"
     local kubHost
-    kubHost="$( hostFromApi "${apiUrl}" )"
+    kubHost="$( applicationUrl "${appName}" )"
     echo "${kubHost}:${port}"
 }
 
@@ -561,14 +568,6 @@ function isAppRunning() {
     fi
     echo ""
     echo "App started successfully!"
-}
-
-function hostFromApi() {
-    local api="${1}"
-    local string
-    local id
-    IFS=':' read -r id string <<< "${api}"
-    echo "${id}"
 }
 
 function readTestPropertiesFromFile() {
