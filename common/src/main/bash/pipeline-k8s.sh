@@ -518,8 +518,7 @@ function portFromKubernetes() {
         jsonPath="{.spec.ports[0].port}"
     fi }
     # '8080' -> 8080
-    local port="$( kubectl --context="${K8S_CONTEXT}" --namespace="${PAAS_NAMESPACE}" get svc "${appName}" -o jsonpath="${jsonPath}" )"
-    echo "${port}" | sed "s/^\([\"']\)\(.*\)\1\$/\2/g"
+    kubectl --context="${K8S_CONTEXT}" --namespace="${PAAS_NAMESPACE}" get svc "${appName}" -o jsonpath="${jsonPath}"
 }
 
 function waitForAppToStart() {
