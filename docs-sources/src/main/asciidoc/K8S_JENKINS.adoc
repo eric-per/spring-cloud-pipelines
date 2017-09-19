@@ -294,7 +294,7 @@ The env vars that are used in all of the jobs are as follows:
 String username="dockeruser"
 String password="dockerpass"
 String email="docker@email.com"
-new File("/usr/share/jenkins/settings.xml").text = """
+new File("/root/.m2/settings.xml").text = """
 <?xml version="1.0" encoding="UTF-8"?>
 <settings>
 	<servers>
@@ -313,15 +313,23 @@ new File("/usr/share/jenkins/settings.xml").text = """
 		</server>
 	</servers>
 </settings>
-println "Done!"
 """
-new File("/usr/share/jenkins/gradle.properties").text="""
+new File("/root/.gradle/gradle.properties").text="""
 M2_SETTINGS_REPO_USERNAME=admin
 M2_SETTINGS_REPO_PASSWORD=password
 DOCKER_USERNAME=${username}
 DOCKER_PASSWORD=${password}
 DOCKER_EMAIL=${email}
 """
+println "Done!"
 ```
-
-
+- Store the certificate manually on Jenkins master
+```
+new File("/root/.kubernetes/").mkdirs()
+new File("/root/.kubernetes/ca.crt").text="""
+-----BEGIN CERTIFICATE-----
+...
+-----END CERTIFICATE-----
+"""
+println "Done!"
+```
