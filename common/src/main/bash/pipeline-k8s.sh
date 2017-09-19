@@ -477,11 +477,11 @@ function prepareForSmokeTests() {
     stubrunnerAppName="stubrunner-${appName}"
     local stubrunnerPort
     stubrunnerPort="$( portFromKubernetes "${stubrunnerAppName}" )"
-    local applicationUrl
-    applicationUrl="$( applicationUrl "${appName}" )"
+    local applicationHost
+    applicationHost="$( applicationHost "${appName}" )"
     local stubRunnerUrl
-    stubRunnerUrl="$( applicationUrl "${stubrunnerAppName}" )"
-    export APPLICATION_URL="${applicationUrl}:${applicationPort}"
+    stubRunnerUrl="$( applicationHost "${stubrunnerAppName}" )"
+    export APPLICATION_URL="${applicationHost}:${applicationPort}"
     export STUBRUNNER_URL="${stubRunnerUrl}:${stubrunnerPort}"
 }
 
@@ -493,12 +493,12 @@ function prepareForE2eTests() {
     logInToPaas
     local applicationPort
     applicationPort="$( portFromKubernetes "${appName}" )"
-    local applicationUrl
-    applicationUrl="$( applicationUrl "${appName}" )"
-    export APPLICATION_URL="${applicationUrl}:${applicationPort}"
+    local applicationHost
+    applicationHost="$( applicationHost "${appName}" )"
+    export APPLICATION_URL="${applicationHost}:${applicationPort}"
 }
 
-function applicationUrl() {
+function applicationHost() {
     local appName="${1}"
     if [[ "${KUBERNETES_MINIKUBE}" == "true" ]]; then
         local apiUrlProp="PAAS_${ENVIRONMENT}_API_URL"
@@ -524,9 +524,9 @@ function waitForAppToStart() {
     local appName="${1}"
     local port
     port="$( portFromKubernetes "${appName}" )"
-    local kubHost
-    kubHost="$( applicationUrl "${appName}" )"
-    isAppRunning "${kubHost}" "${port}"
+    local applicationHost
+    applicationHost="$( applicationHost "${appName}" )"
+    isAppRunning "${applicationHost}" "${port}"
 }
 
 function portFromKubernetes() {
@@ -546,7 +546,7 @@ function retrieveApplicationUrl() {
     local port
     port="$( portFromKubernetes "${appName}" )"
     local kubHost
-    kubHost="$( applicationUrl "${appName}" )"
+    kubHost="$( applicationHost "${appName}" )"
     echo "${kubHost}:${port}"
 }
 
@@ -557,6 +557,7 @@ function isAppRunning() {
     local retries=50
     local running=1
     local healthEndpoint="health"
+    echo "Checking if app [${host}:${port}] is running at [/${healthEndpoint}] endpoint"
     for i in $( seq 1 "${retries}" ); do
         sleep "${waitTime}"
         curl -m 5 "${host}:${port}/${healthEndpoint}" && running=0 && break
