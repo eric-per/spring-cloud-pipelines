@@ -1,0 +1,16 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: jenkins
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        name: jenkins
+    spec:
+      containers:
+      - name: jenkins
+        image: springcloud/spring-cloud-pipeline-jenkins:latest
+        ports:
+        - containerPort: 8080

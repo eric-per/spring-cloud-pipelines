@@ -9,6 +9,8 @@ function logInToPaas() {
     local k8sClientCert="${!clientCert}"
     local clientKey="PAAS_${ENVIRONMENT}_CLIENT_KEY"
     local k8sClientKey="${!clientKey}"
+    local clientToken="PAAS_${ENVIRONMENT}_CLIENT_TOKEN_ID"
+    local k8sClientToken="${!clientToken}"
     local clusterName="PAAS_${ENVIRONMENT}_CLUSTER_NAME"
     local k8sClusterName="${!clusterName}"
     local clusterUser="PAAS_${ENVIRONMENT}_CLUSTER_USERNAME"
@@ -38,7 +40,11 @@ function logInToPaas() {
 
     echo "Logging in to Kubernetes API [${apiUrl}], with cluster name [${k8sClusterName}] and user [${k8sClusterUser}]"
     kubectl config set-cluster "${k8sClusterName}" --server="https://${apiUrl}" --certificate-authority="${k8sCa}"
-    kubectl config set-credentials "${k8sClusterUser}" --certificate-authority="${k8sCa}" --client-key="${k8sClientKey}" --client-certificate="${k8sClientCert}"
+    if [[ "${k8sClientToken}" != "" ]]; then
+        kubectl config set-credentials "${k8sClusterUser}" --token="${k8sClientToken}"
+    else
+        kubectl config set-credentials "${k8sClusterUser}" --certificate-authority="${k8sCa}" --client-key="${k8sClientKey}" --client-certificate="${k8sClientCert}"
+    fi
     kubectl config set-context "${k8sSystemName}" --cluster="${k8sClusterName}" --user="${k8sClusterUser}"
     kubectl config use-context "${k8sSystemName}"
 
