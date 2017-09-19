@@ -19,9 +19,9 @@ String cfStageCredentialId = binding.variables["PAAS_STAGE_CREDENTIAL_ID"] ?: "c
 String cfProdCredentialId = binding.variables["PAAS_PROD_CREDENTIAL_ID"] ?: "cf-prod"
 // remove::end[CF]
 // remove::start[K8S]
-String k8sTestTokenCredentialId= binding.variables["PAAS_TEST_CREDENTIAL_ID"] ?: ""
-String k8sStageTokenCredentialId= binding.variables["PAAS_STAGE_CREDENTIAL_ID"] ?: ""
-String k8sProdTokenCredentialId= binding.variables["PAAS_PROD_CREDENTIAL_ID"] ?: ""
+String k8sTestTokenCredentialId= binding.variables["PAAS_TEST_CLIENT_TOKEN_ID"] ?: ""
+String k8sStageTokenCredentialId= binding.variables["PAAS_STAGE_CLIENT_TOKEN_ID"] ?: ""
+String k8sProdTokenCredentialId= binding.variables["PAAS_PROD_CLIENT_TOKEN_ID"] ?: ""
 // remove::end[K8S]
 String gitEmail = binding.variables["GIT_EMAIL"] ?: "pivo@tal.com"
 String gitName = binding.variables["GIT_NAME"] ?: "Pivo Tal"
