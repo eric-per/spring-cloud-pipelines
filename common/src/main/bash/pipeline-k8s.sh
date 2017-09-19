@@ -505,7 +505,7 @@ function applicationUrl() {
         # host:port -> host
         echo "${!apiUrlProp}" | awk -F: '{print $1}'
     else
-        echo "${appName}"
+        echo "${appName}.${PAAS_NAMESPACE}"
     fi
 }
 
