@@ -511,16 +511,11 @@ function applicationHost() {
 
 function portFromKubernetes() {
     local appName="${1}"
-    local jsonPath
-    { if [[ "${KUBERNETES_MINIKUBE}" == "true" ]]; then
-        jsonPath="{.spec.ports[0].nodePort}"
+    if [[ "${KUBERNETES_MINIKUBE}" == "true" ]]; then
+        kubectl --context="${K8S_CONTEXT}" --namespace="${PAAS_NAMESPACE}" get svc "${appName}" -o jsonPath="{.spec.ports[0].nodePort}"
     else
-        jsonPath="{.spec.ports[0].port}"
-    fi }
-    local port
-    port="$( kubectl --context="${K8S_CONTEXT}" --namespace="${PAAS_NAMESPACE}" get svc "${appName}" -o jsonpath="${jsonPath}" )"
-    # remove any non int chars
-    echo "${port//[!0-9]/}"
+        kubectl --context="${K8S_CONTEXT}" --namespace="${PAAS_NAMESPACE}" get svc "${appName}" -o jsonPath="{.spec.ports[0].port}"
+    fi
 }
 
 function waitForAppToStart() {
