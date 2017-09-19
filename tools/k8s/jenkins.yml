@@ -1,3 +1,16 @@
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: ci-storage
+  labels:
+    name: jenkins
+  annotations:
+    storageclass.beta.kubernetes.io/is-default-class: "true"
+provisioner: kubernetes.io/vsphere-volume
+parameters:
+  diskformat: zeroedthick
+
+---
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
@@ -10,31 +23,31 @@ spec:
         name: jenkins
     spec:
       containers:
-      - name: jenkins
-        image: springcloud/spring-cloud-pipeline-jenkins:latest
-        ports:
-        - containerPort: 8080
-        resources:
-          requests:
-            cpu: 10m
-        env:
-        - name: DOCKER_HOST
-          value: tcp://localhost:2375
-      - name: dind-daemon
-        image: docker:1.12.6-dind
-        resources:
+        - name: jenkins
+          image: springcloud/spring-cloud-pipeline-jenkins:latest
+          ports:
+          - containerPort: 8080
+          resources:
             requests:
-                cpu: 20m
-                memory: 512Mi
-        securityContext:
-            privileged: true
-        volumeMounts:
-          - name: docker-graph-storage
-            mountPath: /var/lib/docker
-          - name: jenkinshome
-            mountPath: /var/jenkins_home
-            securityContext:
-              fsGroup: 1000
+              cpu: 10m
+          env:
+          - name: DOCKER_HOST
+            value: tcp://localhost:2375
+        - name: dind-daemon
+          image: docker:1.12.6-dind
+          resources:
+              requests:
+                  cpu: 20m
+                  memory: 512Mi
+          securityContext:
+              privileged: true
+          volumeMounts:
+            - name: docker-graph-storage
+              mountPath: /var/lib/docker
+            - name: jenkinshome
+              mountPath: /var/jenkins_home
+              securityContext:
+                fsGroup: 1000
       volumes:
         - name: docker-graph-storage
           emptyDir: {}
@@ -47,6 +60,8 @@ apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: jenkins-volume
+  labels:
+    name: jenkins
 spec:
   capacity:
     storage: 20Gi
@@ -58,13 +73,16 @@ spec:
     fsType: ext4
 
 ---
-apiVersion: v1
 kind: PersistentVolumeClaim
+apiVersion: v1
 metadata:
   name: jenkins-volume
+  annotations:
+    volume.beta.kubernetes.io/storage-class: ci-storage
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 20Gi
+  storageClassName: ci-storage
