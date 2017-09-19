@@ -511,12 +511,13 @@ function applicationUrl() {
 
 function portFromKubernetes() {
     local appName="${1}"
+    local jsonPath
     if [[ "${KUBERNETES_MINIKUBE}" == "true" ]]; then
-        kubectl --context="${K8S_CONTEXT}" --namespace="${PAAS_NAMESPACE}" get svc "${appName}" -o jsonpath='{.spec.ports[0].nodePort}'
+        jsonPath="'{.spec.ports[0].nodePort}'"
     else
-        # TODO: Retrieve port from cluster
-        echo ""
+        jsonPath="'{.spec.ports[0].port}'"
     fi
+    kubectl --context="${K8S_CONTEXT}" --namespace="${PAAS_NAMESPACE}" get svc "${appName}" -o jsonpath="${jsonPath}"
 }
 
 function waitForAppToStart() {

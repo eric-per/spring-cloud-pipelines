@@ -323,13 +323,3 @@ DOCKER_EMAIL=${email}
 """
 println "Done!"
 ```
-- Store the certificate manually on Jenkins master
-```
-new File("/root/.kubernetes/").mkdirs()
-new File("/root/.kubernetes/ca.crt").text="""
------BEGIN CERTIFICATE-----
-...
------END CERTIFICATE-----
-"""
-println "Done!"
-```
