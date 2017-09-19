@@ -40,8 +40,11 @@ function logInToPaas() {
     kubectl config set-cluster "${k8sClusterName}" --server="https://${apiUrl}" --certificate-authority="${k8sCa}"
     # TOKEN will get injected as a credential if present
     if [[ "${TOKEN}" != "" ]]; then
+        kubectl config unset "client-certificate"
+        kubectl config unset "client-key"
         kubectl config set-credentials "${k8sClusterUser}" --token="${TOKEN}"
     else
+        kubectl config unset "token"
         kubectl config set-credentials "${k8sClusterUser}" --certificate-authority="${k8sCa}" --client-key="${k8sClientKey}" --client-certificate="${k8sClientCert}"
     fi
     kubectl config set-context "${k8sSystemName}" --cluster="${k8sClusterName}" --user="${k8sClusterUser}"
