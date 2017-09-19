@@ -251,7 +251,10 @@ The env vars that are used in all of the jobs are as follows:
 |PAAS_PROD_CLIENT_CERT | Path to the client certificate for prod environment | /usr/share/jenkins/cert/apiserver.crt
 |PAAS_TEST_CLIENT_KEY | Path to the client key for test environment | /usr/share/jenkins/cert/apiserver.key
 |PAAS_STAGE_CLIENT_KEY | Path to the client key for stage environment | /usr/share/jenkins/cert/apiserver.key
-|PAAS_PROD_CLIENT_KEY | Path to the client key for prod environment | /usr/share/jenkins/cert/apiserver.key
+|PAAS_PROD_CLIENT_KEY | Path to the client key for test environment | /usr/share/jenkins/cert/apiserver.key
+|PAAS_TEST_CLIENT_TOKEN_ID | Access token for test environment |
+|PAAS_STAGE_CLIENT_TOKEN_ID | Access token for test environment |
+|PAAS_PROD_CLIENT_TOKEN_ID | Access token for test environment |
 |PAAS_TEST_CLUSTER_NAME | Name of the cluster for test environment | minikube
 |PAAS_STAGE_CLUSTER_NAME | Name of the cluster for stage environment | minikube
 |PAAS_PROD_CLUSTER_NAME | Name of the cluster for prod environment | minikube
@@ -277,3 +280,14 @@ The env vars that are used in all of the jobs are as follows:
 |DEPLOY_TO_STAGE_STEP_REQUIRED | Should deploy to stage step be present | true
 |BUILD_OPTIONS | Additional options you would like to pass to the Maven / Gradle build |
 |======================
+
+// TODO: Improve this, currently it's just a set of notes
+=== Connecting to a cluster @ PKS
+
+- Log in to the cluster
+- To see the dashboard just do `kubectl proxy` and access `localhost:8081/ui`
+- Deploy Jenkins to the cluster (`deploy-helper.sh`)
+- Deploy Artifactory to the cluster (`deploy-helper.sh`)
+
+
+
