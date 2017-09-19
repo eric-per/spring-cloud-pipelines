@@ -288,6 +288,40 @@ The env vars that are used in all of the jobs are as follows:
 - To see the dashboard just do `kubectl proxy` and access `localhost:8081/ui`
 - Deploy Jenkins to the cluster (`deploy-helper.sh`)
 - Deploy Artifactory to the cluster (`deploy-helper.sh`)
-
+- Update `git` credential
+- Update `settings.xml` and `gradle.properties` with a script
+```groovy
+String username="dockeruser"
+String password="dockerpass"
+String email="docker@email.com"
+new File("/usr/share/jenkins/settings.xml").text = """
+<?xml version="1.0" encoding="UTF-8"?>
+<settings>
+	<servers>
+		<server>
+			<id>artifactory-local</id>
+			<username>admin</username>
+			<password>password</password>
+		</server>
+		<server>
+			<id>docker-repo</id>
+            <username>${username}</username>
+            <password>${password}</password>
+			<configuration>
+                 <email>${email}</email>
+			</configuration>
+		</server>
+	</servers>
+</settings>
+println "Done!"
+"""
+new File("/usr/share/jenkins/gradle.properties").text="""
+M2_SETTINGS_REPO_USERNAME=admin
+M2_SETTINGS_REPO_PASSWORD=password
+DOCKER_USERNAME=${username}
+DOCKER_PASSWORD=${password}
+DOCKER_EMAIL=${email}
+"""
+```
 
 
