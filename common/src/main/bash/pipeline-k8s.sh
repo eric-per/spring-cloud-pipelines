@@ -511,11 +511,15 @@ function applicationHost() {
 
 function portFromKubernetes() {
     local appName="${1}"
-    if [[ "${KUBERNETES_MINIKUBE}" == "true" ]]; then
-        kubectl --context="${K8S_CONTEXT}" --namespace="${PAAS_NAMESPACE}" get svc "${appName}" -o jsonPath="{.spec.ports[0].nodePort}"
+    local jsonPath
+    { if [[ "${KUBERNETES_MINIKUBE}" == "true" ]]; then
+        jsonPath="{.spec.ports[0].nodePort}"
     else
-        kubectl --context="${K8S_CONTEXT}" --namespace="${PAAS_NAMESPACE}" get svc "${appName}" -o jsonPath="{.spec.ports[0].port}"
-    fi
+        jsonPath="{.spec.ports[0].port}"
+    fi }
+    # '8080' -> 8080
+    local port="$( kubectl --context="${K8S_CONTEXT}" --namespace="${PAAS_NAMESPACE}" get svc "${appName}" -o jsonpath="${jsonPath}" )"
+    echo "${port}" | sed "s/^\([\"']\)\(.*\)\1\$/\2/g"
 }
 
 function waitForAppToStart() {
@@ -525,17 +529,6 @@ function waitForAppToStart() {
     local applicationHost
     applicationHost="$( applicationHost "${appName}" )"
     isAppRunning "${applicationHost}" "${port}"
-}
-
-function portFromKubernetes() {
-    local appName="${1}"
-    local jsonPath
-    if [[ "${KUBERNETES_MINIKUBE}" == "true" ]]; then
-        jsonPath="'{.spec.ports[0].nodePort}'"
-    else
-        jsonPath="'{.spec.ports[0].port}'"
-    fi
-    kubectl --context="${K8S_CONTEXT}" --namespace="${PAAS_NAMESPACE}" get svc "${appName}" -o jsonpath="${jsonPath}"
 }
 
 function retrieveApplicationUrl() {
