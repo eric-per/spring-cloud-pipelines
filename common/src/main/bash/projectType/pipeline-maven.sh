@@ -49,7 +49,7 @@ function apiCompatibilityCheck() {
 # and change this function
 function extractMavenProperty() {
 	local prop="${1}"
-	MAVEN_PROPERTY=$("${MAVENW_BIN}" "${BUILD_OPTIONS}" -q  \
+	MAVEN_PROPERTY=$("${MAVENW_BIN}" -q  \
  -Dexec.executable="echo"  \
  -Dexec.args="\${${prop}}"  \
  --non-recursive  \
@@ -68,7 +68,7 @@ function retrieveGroupId() {
 	{
 		ruby -r rexml/document  \
  -e 'puts REXML::Document.new(File.new(ARGV.shift)).elements["/project/groupId"].text' pom.xml  \
- || "${MAVENW_BIN}" "${BUILD_OPTIONS}" org.apache.maven.plugins:maven-help-plugin:2.2:evaluate  \
+ || "${MAVENW_BIN}" org.apache.maven.plugins:maven-help-plugin:2.2:evaluate  \
  -Dexpression=project.groupId | grep -Ev '(^\[|Download\w+:)'
 	} | tail -1
 }
@@ -77,7 +77,7 @@ function retrieveAppName() {
 	{
 		ruby -r rexml/document  \
  -e 'puts REXML::Document.new(File.new(ARGV.shift)).elements["/project/artifactId"].text' pom.xml  \
- || "${MAVENW_BIN}" "${BUILD_OPTIONS}" org.apache.maven.plugins:maven-help-plugin:2.2:evaluate  \
+ || "${MAVENW_BIN}" org.apache.maven.plugins:maven-help-plugin:2.2:evaluate  \
  -Dexpression=project.artifactId | grep -Ev '(^\[|Download\w+:)'
 	} | tail -1
 }
