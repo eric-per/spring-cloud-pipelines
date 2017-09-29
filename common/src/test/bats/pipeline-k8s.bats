@@ -111,7 +111,7 @@ export -f mockGradlew
 
 	run build
 
-	assert_output --partial "^.*mvnw clean verify deploy -Ddistribution.management.release.id="
+	assert_output --partial "mvnw clean verify deploy -Ddistribution.management.release.id="
 	assert_output --partial "-Ddistribution.management.release.url= "
 	assert_output --partial "-Drepo.with.binaries= "
 	assert_output --partial "-DDOCKER_REGISTRY_ORGANIZATION=DOCKER_REGISTRY_ORGANIZATION"
