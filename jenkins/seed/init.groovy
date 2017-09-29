@@ -59,6 +59,20 @@ new DslScriptLoader(jobManagement).with {
 			.replace('scpipelines', "${System.getenv('DOCKER_REGISTRY_ORGANIZATION') ?: "scpipelines"}"))
 }
 
+println "Creating repo with binaries credentials"
+String repoWithBinariesCredId = "repo-with-binaries"
+boolean repoCredsMissing = SystemCredentialsProvider.getInstance().getCredentials().findAll {
+	it.getDescriptor().getId() == repoWithBinariesCredId
+}.empty
+if (repoCredsMissing) {
+	println "Credential [${repoWithBinariesCredId}] is missing - will create it"
+	SystemCredentialsProvider.getInstance().getCredentials().add(
+		new UsernamePasswordCredentialsImpl(CredentialsScope.GLOBAL, repoWithBinariesCredId,
+			"Repo with binaries", System.getenv('M2_SETTINGS_REPO_USERNAME') ?: "admin",
+			System.getenv('M2_SETTINGS_REPO_PASSWORD') ?: "password"))
+	SystemCredentialsProvider.getInstance().save()
+}
+
 // remove::start[CF]
 println "Creating the credentials for CF"
 ['cf-test', 'cf-stage', 'cf-prod'].each { String id ->
@@ -147,9 +161,12 @@ if (kubernetesHome.exists()) {
 	println "The .kubernetes folder is already created - won't copy the certificates"
 }
 
-String dockerRegistryUser = new File('/usr/share/jenkins/dockerRegistryUser')?.text ?: "changeme"
-String dockerRegistryPass = new File('/usr/share/jenkins/dockerRegistryPass')?.text ?: "changeme"
-String dockerRegistryEmail = new File('/usr/share/jenkins/dockerRegistryEmail')?.text ?: "change@me.com"
+String dockerRegistryUser =
+	new File('/usr/share/jenkins/dockerRegistryUser')?.text ?: "changeme"
+String dockerRegistryPass =
+	new File('/usr/share/jenkins/dockerRegistryPass')?.text ?: "changeme"
+String dockerRegistryEmail =
+	new File('/usr/share/jenkins/dockerRegistryEmail')?.text ?: "change@me.com"
 
 println "Updating maven settings with docker registry data"
 mavenSettings.text = mavenSettings.text
@@ -162,6 +179,19 @@ gradleProperties.text = gradleProperties.text
 	.replace("dockeruser", dockerRegistryUser)
 	.replace("dockerpass", dockerRegistryPass)
 	.replace("docker@email.com", dockerRegistryEmail)
+
+println "Creating repo with binaries credentials"
+String dockerCredId = "docker-registry"
+boolean dockerCredsMissing = SystemCredentialsProvider.getInstance().getCredentials().findAll {
+	it.getDescriptor().getId() == dockerCredId
+}.empty
+if (dockerCredsMissing) {
+	println "Credential [${dockerCredId}] is missing - will create it"
+	SystemCredentialsProvider.getInstance().getCredentials().add(
+		new UsernamePasswordCredentialsImpl(CredentialsScope.GLOBAL, dockerCredId,
+			"Repo with binaries", dockerRegistryUser, dockerRegistryPass))
+	SystemCredentialsProvider.getInstance().save()
+}
 
 println "Adding MySQL credentials"
 boolean mySqlCredsMissing = SystemCredentialsProvider.getInstance().getCredentials().findAll {

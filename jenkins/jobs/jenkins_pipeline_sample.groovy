@@ -758,6 +758,7 @@ class PipelineDefaults {
 		setIfPresent(envs, variables, "TOOLS_BRANCH")
 		setIfPresent(envs, variables, "M2_SETTINGS_REPO_ID")
 		setIfPresent(envs, variables, "REPO_WITH_BINARIES")
+		setIfPresent(envs, variables, "REPO_WITH_BINARIES_CREDENTIAL_ID")
 		// remove::start[CF]
 		setIfPresent(envs, variables, "PAAS_TEST_API_URL")
 		setIfPresent(envs, variables, "PAAS_STAGE_API_URL")
@@ -774,6 +775,9 @@ class PipelineDefaults {
 		// remove::end[CF]
 		// remove::start[K8S]
 		setIfPresent(envs, variables, "DOCKER_REGISTRY_ORGANIZATION")
+		setIfPresent(envs, variables, "DOCKER_REGISTRY_CREDENTIAL_ID")
+		setIfPresent(envs, variables, "DOCKER_SERVER_ID")
+		setIfPresent(envs, variables, "DOCKER_EMAIL")
 		setIfPresent(envs, variables, "PAAS_TEST_API_URL")
 		setIfPresent(envs, variables, "PAAS_STAGE_API_URL")
 		setIfPresent(envs, variables, "PAAS_PROD_API_URL")
