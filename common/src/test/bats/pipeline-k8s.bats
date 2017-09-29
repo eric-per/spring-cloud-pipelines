@@ -14,6 +14,13 @@ setup() {
 	export PAAS_TYPE="k8s"
 	export KUBE_CONFIG_PATH="${TEMP_DIR}/.kube/config"
 
+	export DOCKER_REGISTRY_ORGANIZATION=DOCKER_REGISTRY_ORGANIZATION
+	export DOCKER_REGISTRY_URL=DOCKER_REGISTRY_URL
+	export DOCKER_SERVER_ID=DOCKER_SERVER_ID
+	export DOCKER_USERNAME=DOCKER_USERNAME
+	export DOCKER_PASSWORD=DOCKER_PASSWORD
+	export DOCKER_EMAIL=DOCKER_EMAIL
+
 	export PAAS_TEST_CA="${TEMP_DIR}/ca"
 	export PAAS_TEST_CLIENT_CERT="${TEMP_DIR}/client_cert"
 	export PAAS_TEST_CLIENT_KEY="${TEMP_DIR}/client_key"
@@ -96,6 +103,24 @@ export -f kubectl_that_returns_empty_string
 export -f kubectl_that_returns_deployments
 export -f mockMvnw
 export -f mockGradlew
+
+@test "should pass docker related properties to the build [K8S][Maven]" {
+	export ENVIRONMENT=BUILD
+	cd "${TEMP_DIR}/maven/empty_project"
+	source "${SOURCE_DIR}/pipeline.sh"
+
+	run build
+
+	assert_output --regexp "^.*mvnw clean verify deploy -Ddistribution.management.release.id=.*$"
+	assert_output --regexp "^.*mvnw clean verify deploy .* -Ddistribution.management.release.url= .*$"
+	assert_output --regexp "^.*mvnw clean verify deploy .* -Drepo.with.binaries= .*$"
+	assert_output --regexp "^.*mvnw clean verify deploy .* -DDOCKER_REGISTRY_ORGANIZATION=DOCKER_REGISTRY_ORGANIZATION .*$"
+	assert_output --regexp "^.*mvnw clean verify deploy .* -DDOCKER_REGISTRY_URL=DOCKER_REGISTRY_URL .*$"
+	assert_output --regexp "^.*mvnw clean verify deploy .* -DDOCKER_SERVER_ID=DOCKER_SERVER_ID .*$"
+	assert_output --regexp "^.*mvnw clean verify deploy .* -DDOCKER_USERNAME=DOCKER_USERNAME .*$"
+	assert_output --regexp "^.*mvnw clean verify deploy .* -DDOCKER_PASSWORD=DOCKER_PASSWORD .*$"
+	assert_output --regexp "^.*mvnw clean verify deploy .* -DDOCKER_EMAIL=DOCKER_EMAIL .*$"
+}
 
 @test "should download kubectl if it's missing and connect to cluster [K8S]" {
 	export REDOWNLOAD_INFRA="false"

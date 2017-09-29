@@ -16,12 +16,13 @@ fi
 
 function build() {
 	echo "Additional Build Options [${BUILD_OPTIONS}]"
-
+	# Required by settings.xml
+	BUILD_OPTIONS="${BUILD_OPTIONS} -DM2_SETTINGS_REPO_ID=${M2_SETTINGS_REPO_ID} -DM2_SETTINGS_REPO_USERNAME=${M2_SETTINGS_REPO_USERNAME} -DM2_SETTINGS_REPO_PASSWORD=${M2_SETTINGS_REPO_PASSWORD}"
 	"${MAVENW_BIN}" org.codehaus.mojo:versions-maven-plugin:2.3:set -DnewVersion="${PIPELINE_VERSION}" "${BUILD_OPTIONS}" || (echo "Build failed!!!" && return 1)
 	if [[ "${CI}" == "CONCOURSE" ]]; then
-		"${MAVENW_BIN}" clean verify deploy -Ddistribution.management.release.id="${M2_SETTINGS_REPO_ID}" -Ddistribution.management.release.url="${REPO_WITH_BINARIES}" -Drepo.with.binaries="${REPO_WITH_BINARIES}" ${BUILD_OPTIONS} || (printTestResults && return 1)
+		"${MAVENW_BIN}" clean verify deploy -Ddistribution.management.release.id="${M2_SETTINGS_REPO_ID}" -Ddistribution.management.release.url="${REPO_WITH_BINARIES}" -Drepo.with.binaries="${REPO_WITH_BINARIES}" "${BUILD_OPTIONS}" || (printTestResults && return 1)
 	else
-		"${MAVENW_BIN}" clean verify deploy -Ddistribution.management.release.id="${M2_SETTINGS_REPO_ID}" -Ddistribution.management.release.url="${REPO_WITH_BINARIES}" -Drepo.with.binaries="${REPO_WITH_BINARIES}" ${BUILD_OPTIONS}
+		"${MAVENW_BIN}" clean verify deploy -Ddistribution.management.release.id="${M2_SETTINGS_REPO_ID}" -Ddistribution.management.release.url="${REPO_WITH_BINARIES}" -Drepo.with.binaries="${REPO_WITH_BINARIES}" "${BUILD_OPTIONS}"
 	fi
 }
 
@@ -39,9 +40,9 @@ function apiCompatibilityCheck() {
 		echo "Last prod version equals [${LATEST_PROD_VERSION}]"
 		echo "Additional Build Options [${BUILD_OPTIONS}]"
 		if [[ "${CI}" == "CONCOURSE" ]]; then
-			"${MAVENW_BIN}" clean verify -Papicompatibility -Dlatest.production.version="${LATEST_PROD_VERSION}" -Drepo.with.binaries="${REPO_WITH_BINARIES}" ${BUILD_OPTIONS} || (printTestResults && return 1)
+			"${MAVENW_BIN}" clean verify -Papicompatibility -Dlatest.production.version="${LATEST_PROD_VERSION}" -Drepo.with.binaries="${REPO_WITH_BINARIES}" "${BUILD_OPTIONS}" || (printTestResults && return 1)
 		else
-			"${MAVENW_BIN}" clean verify -Papicompatibility -Dlatest.production.version="${LATEST_PROD_VERSION}" -Drepo.with.binaries="${REPO_WITH_BINARIES}" ${BUILD_OPTIONS}
+			"${MAVENW_BIN}" clean verify -Papicompatibility -Dlatest.production.version="${LATEST_PROD_VERSION}" -Drepo.with.binaries="${REPO_WITH_BINARIES}" "${BUILD_OPTIONS}"
 		fi
 	fi
 }
@@ -50,7 +51,7 @@ function apiCompatibilityCheck() {
 # and change this function
 function extractMavenProperty() {
 	local prop="${1}"
-	MAVEN_PROPERTY=$("${MAVENW_BIN}" ${BUILD_OPTIONS} -q  \
+	MAVEN_PROPERTY=$("${MAVENW_BIN}" "${BUILD_OPTIONS}" -q  \
  -Dexec.executable="echo"  \
  -Dexec.args="\${${prop}}"  \
  --non-recursive  \
@@ -69,7 +70,7 @@ function retrieveGroupId() {
 	{
 		ruby -r rexml/document  \
  -e 'puts REXML::Document.new(File.new(ARGV.shift)).elements["/project/groupId"].text' pom.xml  \
- || "${MAVENW_BIN}" ${BUILD_OPTIONS} org.apache.maven.plugins:maven-help-plugin:2.2:evaluate  \
+ || "${MAVENW_BIN}" "${BUILD_OPTIONS}" org.apache.maven.plugins:maven-help-plugin:2.2:evaluate  \
  -Dexpression=project.groupId | grep -Ev '(^\[|Download\w+:)'
 	} | tail -1
 }
@@ -78,7 +79,7 @@ function retrieveAppName() {
 	{
 		ruby -r rexml/document  \
  -e 'puts REXML::Document.new(File.new(ARGV.shift)).elements["/project/artifactId"].text' pom.xml  \
- || "${MAVENW_BIN}" ${BUILD_OPTIONS} org.apache.maven.plugins:maven-help-plugin:2.2:evaluate  \
+ || "${MAVENW_BIN}" "${BUILD_OPTIONS}" org.apache.maven.plugins:maven-help-plugin:2.2:evaluate  \
  -Dexpression=project.artifactId | grep -Ev '(^\[|Download\w+:)'
 	} | tail -1
 }
@@ -98,9 +99,9 @@ function runSmokeTests() {
 	echo "Running smoke tests. Application url [${applicationUrl}], Stubrunner Url [${stubrunnerUrl}]"
 
 	if [[ "${CI}" == "CONCOURSE" ]]; then
-		"${MAVENW_BIN}" clean install -Psmoke -Dapplication.url="${applicationUrl}" -Dstubrunner.url="${stubrunnerUrl}" ${BUILD_OPTIONS} || (printTestResults && return 1)
+		"${MAVENW_BIN}" clean install -Psmoke -Dapplication.url="${applicationUrl}" -Dstubrunner.url="${stubrunnerUrl}" "${BUILD_OPTIONS}" || (printTestResults && return 1)
 	else
-		"${MAVENW_BIN}" clean install -Psmoke -Dapplication.url="${applicationUrl}" -Dstubrunner.url="${stubrunnerUrl}" ${BUILD_OPTIONS}
+		"${MAVENW_BIN}" clean install -Psmoke -Dapplication.url="${applicationUrl}" -Dstubrunner.url="${stubrunnerUrl}" "${BUILD_OPTIONS}"
 	fi
 }
 
@@ -109,9 +110,9 @@ function runE2eTests() {
 	echo "Running e2e tests for application with url [${applicationUrl}]"
 
 	if [[ "${CI}" == "CONCOURSE" ]]; then
-		"${MAVENW_BIN}" clean install -Pe2e -Dapplication.url="${applicationUrl}" ${BUILD_OPTIONS} || (printTestResults && return 1)
+		"${MAVENW_BIN}" clean install -Pe2e -Dapplication.url="${applicationUrl}" "${BUILD_OPTIONS}" || (printTestResults && return 1)
 	else
-		"${MAVENW_BIN}" clean install -Pe2e -Dapplication.url="${applicationUrl}" ${BUILD_OPTIONS}
+		"${MAVENW_BIN}" clean install -Pe2e -Dapplication.url="${applicationUrl}" "${BUILD_OPTIONS}"
 	fi
 }
 
