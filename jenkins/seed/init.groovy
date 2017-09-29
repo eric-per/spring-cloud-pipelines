@@ -60,10 +60,6 @@ println "Creating the credentials for CF"
 }
 // remove::end[CF]
 
-println "Adding credentials to deploy to the repo with jars"
-String repoWithJarsId = "repo-with-binaries"
-setCredsIfMissing(repoWithJarsId, "Repo with jars credential", "admin", "pass")
-
 println "Importing GPG Keys"
 def privateKey = new File('/usr/share/jenkins/private.key')
 def publicKey = new File('/usr/share/jenkins/public.key')

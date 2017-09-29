@@ -111,15 +111,15 @@ export -f mockGradlew
 
 	run build
 
-	assert_output --regexp "^.*mvnw clean verify deploy -Ddistribution.management.release.id=.*$"
-	assert_output --regexp "^.*mvnw clean verify deploy .* -Ddistribution.management.release.url= .*$"
-	assert_output --regexp "^.*mvnw clean verify deploy .* -Drepo.with.binaries= .*$"
-	assert_output --regexp "^.*mvnw clean verify deploy .* -DDOCKER_REGISTRY_ORGANIZATION=DOCKER_REGISTRY_ORGANIZATION.*$"
-	assert_output --regexp "^.*mvnw clean verify deploy .* -DDOCKER_REGISTRY_URL=DOCKER_REGISTRY_URL.*$"
-	assert_output --regexp "^.*mvnw clean verify deploy .* -DDOCKER_SERVER_ID=DOCKER_SERVER_ID.*$"
-	assert_output --regexp "^.*mvnw clean verify deploy .* -DDOCKER_USERNAME=DOCKER_USERNAME.*$"
-	assert_output --regexp "^.*mvnw clean verify deploy .* -DDOCKER_PASSWORD=DOCKER_PASSWORD.*$"
-	assert_output --regexp "^.*mvnw clean verify deploy .* -DDOCKER_EMAIL=DOCKER_EMAIL.*$"
+	assert_output --partial "^.*mvnw clean verify deploy -Ddistribution.management.release.id="
+	assert_output --partial "-Ddistribution.management.release.url= "
+	assert_output --partial "-Drepo.with.binaries= "
+	assert_output --partial "-DDOCKER_REGISTRY_ORGANIZATION=DOCKER_REGISTRY_ORGANIZATION"
+	assert_output --partial "-DDOCKER_REGISTRY_URL=DOCKER_REGISTRY_URL"
+	assert_output --partial "-DDOCKER_SERVER_ID=DOCKER_SERVER_ID"
+	assert_output --partial "-DDOCKER_USERNAME=DOCKER_USERNAME"
+	assert_output --partial "-DDOCKER_PASSWORD=DOCKER_PASSWORD"
+	assert_output --partial "-DDOCKER_EMAIL=DOCKER_EMAIL"
 }
 
 @test "should download kubectl if it's missing and connect to cluster [K8S]" {
