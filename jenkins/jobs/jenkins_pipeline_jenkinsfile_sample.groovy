@@ -86,6 +86,7 @@ envs["MYSQL_ROOT_CREDENTIAL_ID"] = binding.variables["MYSQL_ROOT_CREDENTIAL_ID"]
 envs["MYSQL_CREDENTIAL_ID"] = binding.variables["MYSQL_CREDENTIAL_ID"] ?: ""
 envs["DOCKER_SERVER_ID"] = binding.variables["DOCKER_SERVER_ID"] ?: "docker-repo"
 envs["DOCKER_EMAIL"] = binding.variables["DOCKER_EMAIL"] ?: "change@me.com"
+envs["DOCKER_REGISTRY_URL"] = binding.variables["DOCKER_REGISTRY_URL"] ?: "https://index.docker.io/v1/"
 
 parsedRepos.each {
 	List<String> parsedEntry = it.split('\\$')

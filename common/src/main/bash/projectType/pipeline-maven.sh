@@ -15,7 +15,6 @@ if [[ ${BUILD_OPTIONS} != *"java.security.egd"* ]]; then
 fi
 
 function build() {
-	echo "Additional Build Options [${BUILD_OPTIONS}]"
 	# Required by settings.xml
 	BUILD_OPTIONS="${BUILD_OPTIONS} -DM2_SETTINGS_REPO_ID=${M2_SETTINGS_REPO_ID} -DM2_SETTINGS_REPO_USERNAME=${M2_SETTINGS_REPO_USERNAME} -DM2_SETTINGS_REPO_PASSWORD=${M2_SETTINGS_REPO_PASSWORD}"
 	"${MAVENW_BIN}" org.codehaus.mojo:versions-maven-plugin:2.3:set -DnewVersion="${PIPELINE_VERSION}" "${BUILD_OPTIONS}" || (echo "Build failed!!!" && return 1)
@@ -38,7 +37,6 @@ function apiCompatibilityCheck() {
 		# Downloading latest jar
 		LATEST_PROD_VERSION=${LATEST_PROD_TAG#prod/}
 		echo "Last prod version equals [${LATEST_PROD_VERSION}]"
-		echo "Additional Build Options [${BUILD_OPTIONS}]"
 		if [[ "${CI}" == "CONCOURSE" ]]; then
 			"${MAVENW_BIN}" clean verify -Papicompatibility -Dlatest.production.version="${LATEST_PROD_VERSION}" -Drepo.with.binaries="${REPO_WITH_BINARIES}" "${BUILD_OPTIONS}" || (printTestResults && return 1)
 		else
