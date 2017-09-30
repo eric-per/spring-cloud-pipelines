@@ -137,6 +137,21 @@ dsl.job("${projectName}-stage-env-test") {
 				currentBuild()
 			}
 		}
+		buildPipelineTrigger("${projectName}-prod-env-rollback") {
+			parameters {
+				currentBuild()
+			}
+		}
+	}
+}
+
+dsl.job("${projectName}-prod-env-rollback") {
+	deliveryPipelineConfiguration('Prod', 'Rollback to blue version on production')
+	wrappers {
+		deliveryPipelineVersion('${ENV,var="PIPELINE_VERSION"}', true)
+	}
+	steps {
+		shell("echo 'Rolling back to green'")
 	}
 }
 

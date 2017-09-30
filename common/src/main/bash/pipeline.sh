@@ -67,6 +67,11 @@ function performGreenDeployment() {
 	exit 1
 }
 
+function rollbackToBlueInstance() {
+	echo "Will rollback to blue instance"
+	exit 1
+}
+
 function deleteBlueInstance() {
 	echo "Deletes the old, Blue binary from the production environment"
 	exit 1
