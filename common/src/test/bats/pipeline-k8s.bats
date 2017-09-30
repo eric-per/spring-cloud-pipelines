@@ -216,6 +216,7 @@ export -f mockGradlew
 	export KUBECTL_BIN="kubectl"
 	export K8S_CONTEXT="context"
 	export PAAS_NAMESPACE="sc-pipelines-test"
+	export KUBERNETES_MINIKUBE="false"
 	export BUILD_PROJECT_TYPE="maven"
 	export OUTPUT_DIR="target"
 	cd "${TEMP_DIR}/${BUILD_PROJECT_TYPE}/empty_project"

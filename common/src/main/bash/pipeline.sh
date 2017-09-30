@@ -196,7 +196,7 @@ PIPELINE_DESCRIPTOR="${PIPELINE_DESCRIPTOR:-sc-pipelines.yml}"
 export PIPELINE_DESCRIPTOR PAAS_TYPE LOWERCASE_ENV
 
 echo "Picked PAAS is [${PAAS_TYPE}]"
-echo "Current environment is [${ENVIRONMENT}], lower case [${LOWERCASE_ENV}]"
+echo "Current environment is [${ENVIRONMENT}]"
 # shellcheck source=/dev/null
 [[ -f "${__ROOT}/pipeline-${PAAS_TYPE}.sh" ]] && source "${__ROOT}/pipeline-${PAAS_TYPE}.sh" ||  \
  echo "No pipeline-${PAAS_TYPE}.sh found"
