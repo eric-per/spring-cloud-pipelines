@@ -93,7 +93,7 @@ envs["DOCKER_EMAIL"] = binding.variables["DOCKER_EMAIL"] ?: "change@me.com"
 envs["DOCKER_REGISTRY_URL"] = binding.variables["DOCKER_REGISTRY_URL"] ?: "https://index.docker.io/v1/"
 
 parsedRepos.each {
-	String gitRepoName = it.split('/').last()
+	String gitRepoName = it.split('/').last() - '.git'
 	String fullGitRepo = it
 	String branchName = "master"
 	int customNameIndex = it.indexOf('$')
@@ -124,7 +124,7 @@ parsedRepos.each {
 			branchName = it.substring(customBranchIndex + 1)
 		}
 	}
-	String projectName = "${gitRepoName - '.git'}-declarative-pipeline"
+	String projectName = "${gitRepoName}-declarative-pipeline"
 	
 	envs['GIT_REPOSITORY'] = fullGitRepo
 	envs['GIT_BRANCH_NAME'] = branchName

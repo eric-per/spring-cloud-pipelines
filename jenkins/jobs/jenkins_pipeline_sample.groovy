@@ -50,7 +50,7 @@ String repos = binding.variables["REPOS"] ?:
 		 "https://github.com/marcingrzejszczak/github-webhook"].join(",")
 List<String> parsedRepos = repos.split(",")
 parsedRepos.each {
-	String gitRepoName = it.split('/').last()
+	String gitRepoName = it.split('/').last() - '.git'
 	String fullGitRepo
 	String branchName = "master"
 	int customNameIndex = it.indexOf('$')
@@ -82,7 +82,7 @@ parsedRepos.each {
 		}
 	}
 	
-	String projectName = "${gitRepoName - '.git'}-pipeline"
+	String projectName = "${gitRepoName}-pipeline"
 
 	//  ======= JOBS =======
 	dsl.job("${projectName}-build") {
