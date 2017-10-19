@@ -25,6 +25,7 @@ USER root
 # files there
 RUN printf "%s" "${gituser}" > /usr/share/jenkins/gituser && \
     printf "%s" "${gitpass}" > /usr/share/jenkins/gitpass && \
+    printf "%s" "${gitsshkey}" > /usr/share/jenkins/gitsshkey && \
     printf "%s" "${dockerRegistryUser}" > /usr/share/jenkins/dockerRegistryUser && \
     printf "%s" "${dockerRegistryPass}" > /usr/share/jenkins/dockerRegistryPass && \
     printf "%s" "${dockerRegistryEmail}" > /usr/share/jenkins/dockerRegistryEmail
