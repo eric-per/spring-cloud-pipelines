@@ -82,7 +82,7 @@ parsedRepos.each {
 		}
 	}
 	
-	String projectName = "${gitRepoName}-pipeline"
+	String projectName = "${gitRepoName - '.git'}-pipeline"
 
 	//  ======= JOBS =======
 	dsl.job("${projectName}-build") {

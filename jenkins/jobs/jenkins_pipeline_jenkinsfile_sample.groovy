@@ -124,7 +124,7 @@ parsedRepos.each {
 			branchName = it.substring(customBranchIndex + 1)
 		}
 	}
-	String projectName = "${gitRepoName}-declarative-pipeline"
+	String projectName = "${gitRepoName - '.git'}-declarative-pipeline"
 	
 	envs['GIT_REPOSITORY'] = fullGitRepo
 	envs['GIT_BRANCH_NAME'] = branchName
