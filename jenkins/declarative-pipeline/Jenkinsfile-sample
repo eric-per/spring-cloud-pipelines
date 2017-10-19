@@ -109,15 +109,17 @@ pipeline {
 						)
 					]
 				}
-				if (Boolean.parseBoolean(env.GIT_USE_SSH_KEY) == Boolean.TRUE) {
-					sh """
-					eval "\$(ssh-agent -s)"
-					ssh-add /usr/share/jenkins/gitsshkey
-					"""
+				sh """#!/bin/bash
+				${
+					if (Boolean.parseBoolean(env.GIT_USE_SSH_KEY) == Boolean.TRUE) {
+						"""
+						eval "\$(ssh-agent -s)"
+						ssh-add /usr/share/jenkins/gitsshkey
+						"""
+					}	
 				}
-				sh '''#!/bin/bash
-				${WORKSPACE}@tools/common/src/main/bash/build_and_upload.sh
-				'''
+				\${WORKSPACE}@tools/common/src/main/bash/build_and_upload.sh
+				"""
 			}
 		}
 
@@ -199,21 +201,21 @@ pipeline {
 				value: 'yes'
 			}
 			steps {
-				String setup=""
-				if (Boolean.parseBoolean(env.GIT_USE_SSH_KEY) == Boolean.TRUE) {
-					setup = """
-					eval "\$(ssh-agent -s)"
-					ssh-add /usr/share/jenkins/gitsshkey
-					"""
-				} else {
-					setup = """
-					# https://issues.jenkins-ci.org/browse/JENKINS-28335
-					git config --local credential.helper cache
-					echo 'protocol=https\nhost=github.com\nusername=${GIT_USERNAME}\npassword=${GIT_PASSWORD}\n\n' | git credential approve
-					"""
-				}
 				sh """
-					${setup}
+					${
+						if (Boolean.parseBoolean(env.GIT_USE_SSH_KEY) == Boolean.TRUE) {
+							"""
+							eval "\$(ssh-agent -s)"
+							ssh-add /usr/share/jenkins/gitsshkey
+							"""
+						} else {
+							"""
+							# https://issues.jenkins-ci.org/browse/JENKINS-28335
+							git config --local credential.helper cache
+							echo 'protocol=https\nhost=github.com\nusername=${GIT_USERNAME}\npassword=${GIT_PASSWORD}\n\n' | git credential approve
+							"""
+						}
+					}
 					git tag prod/\${PIPELINE_VERSION}
 					git push --tags
 					"""
