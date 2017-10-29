@@ -19,6 +19,7 @@ function logInToPaas() {
 	local k8sSystemName="${!systemName}"
 	local api="PAAS_${ENVIRONMENT}_API_URL"
 	local apiUrl="${!api:-192.168.99.100:8443}"
+	echo "Path to kubectl [${KUBECTL_BIN}]"
 	chmod +x "${KUBECTL_BIN}"
 	if [[ "${KUBECTL_BIN}" = "/*" ]]; then
 		pathadd "${KUBECTL_BIN}"
@@ -49,8 +50,9 @@ function logInToPaas() {
 }
 
 function pathadd() {
-	if [ -d "$1" ] && [[ ":$PATH:" != *":$1:"* ]]; then
-		PATH="${PATH:+"$PATH:"}$1"
+	echo "Adding [${1}] to ${PATH}"
+	if [ -d "${1}" ] && [[ ":${PATH}:" != *":${1}:"* ]]; then
+		PATH="${PATH:+"${PATH}:"}${1}"
 	fi
 }
 
