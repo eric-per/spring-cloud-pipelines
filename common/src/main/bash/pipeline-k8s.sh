@@ -23,10 +23,7 @@ function logInToPaas() {
 	if [[ "${KUBECTL_BIN}" != "/"* ]]; then
 		echo "Downloading CLI"
 		curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/darwin/amd64/kubectl" --fail
-		pathadd "$(pwd)/kubectl"
-	else
-		echo "Passed absolute path so will add it to path"
-		pathadd "${KUBECTL_BIN}"
+		KUBECTL_BIN="$(pwd)/kubectl"
 	fi
 	chmod +x "${KUBECTL_BIN}"
 	echo "Removing current Kubernetes configuration"
@@ -48,13 +45,6 @@ function logInToPaas() {
 
 	echo "CLI version"
 	"${KUBECTL_BIN}" version
-}
-
-function pathadd() {
-	echo "Adding [${1}] to ${PATH}"
-	if [ -d "${1}" ] && [[ ":${PATH}:" != *":${1}:"* ]]; then
-		PATH="${PATH:+"${PATH}:"}${1}"
-	fi
 }
 
 function testDeploy() {
