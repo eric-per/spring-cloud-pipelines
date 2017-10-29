@@ -20,14 +20,15 @@ function logInToPaas() {
 	local api="PAAS_${ENVIRONMENT}_API_URL"
 	local apiUrl="${!api:-192.168.99.100:8443}"
 	echo "Path to kubectl [${KUBECTL_BIN}]"
-	chmod +x "${KUBECTL_BIN}"
 	if [[ "${KUBECTL_BIN}" != "/"* ]]; then
 		echo "Downloading CLI"
 		curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/darwin/amd64/kubectl" --fail
 		pathadd "$(pwd)/kubectl"
 	else
+		echo "Passed absolute path so will add it to path"
 		pathadd "${KUBECTL_BIN}"
 	fi
+	chmod +x "${KUBECTL_BIN}"
 	echo "Removing current Kubernetes configuration"
 	rm -rf "${KUBE_CONFIG_PATH}" || echo "Failed to remove Kube config. Continuing with the script"
 	echo "Logging in to Kubernetes API [${apiUrl}], with cluster name [${k8sClusterName}] and user [${k8sClusterUser}]"
