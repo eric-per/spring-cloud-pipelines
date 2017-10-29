@@ -48,6 +48,7 @@ jobs:
       - generate-version
       trigger: true
   - task: build-and-upload
+    privileged: true
     file: tools/concourse/tasks/build-and-upload/task.yml
     params:
       <<: *common-params
@@ -247,6 +248,7 @@ jobs:
       - prod-deploy
       trigger: false
   - task: prod-complete
+    privileged: true
     file: tools/concourse/task.yml
     params:
       MESSAGE: "Completing the switch over"

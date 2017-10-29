@@ -11,6 +11,10 @@ cp -r ${ROOT_FOLDER}/${TOOLS_RESOURCE}/common/src/main/bash/* ${SCRIPTS_OUTPUT_F
     cp -r ${ROOT_FOLDER}/${CUSTOM_SCRIPT_IDENTIFIER}/common/src/main/bash/* ${SCRIPTS_OUTPUT_FOLDER}/ || \
     echo "No custom scripts found"
 
+# If you're using some other image with Docker change these lines
+source /docker-lib.sh || echo "Failed to source docker-lib.sh... Hopefully you know what you're doing"
+start_docker || echo "Failed to start docker... Hopefully you know what you're doing"
+
 echo "Retrieving version"
 cp ${ROOT_FOLDER}/${VERSION_RESOURCE}/version ${SCRIPTS_OUTPUT_FOLDER}/
 export PIPELINE_VERSION=$( cat ${SCRIPTS_OUTPUT_FOLDER}/${VERSION_RESOURCE} )
