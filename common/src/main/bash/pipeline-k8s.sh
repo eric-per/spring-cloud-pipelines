@@ -22,7 +22,7 @@ function logInToPaas() {
 	echo "Path to kubectl [${KUBECTL_BIN}]"
 	if [[ "${KUBECTL_BIN}" != "/"* ]]; then
 		echo "Downloading CLI"
-		curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/darwin/amd64/kubectl" --fail
+		curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/${SYSTEM}/amd64/kubectl" --fail
 		KUBECTL_BIN="$(pwd)/${KUBECTL_BIN}"
 	fi
 	chmod +x "${KUBECTL_BIN}"
