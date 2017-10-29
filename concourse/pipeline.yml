@@ -28,6 +28,7 @@ jobs:
     - get: tools
     - get: version
   - task: generate-version
+    privileged: true
     file: tools/concourse/tasks/generate-version/task.yml
     params:
       GIT_EMAIL: ((git-email))
@@ -70,6 +71,7 @@ jobs:
       - build-and-upload
       trigger: true
   - task: build-api-compatibility-check
+    privileged: true
     file: tools/concourse/task.yml
     params:
       MESSAGE: "Deploying the built application on test environment"
@@ -88,6 +90,7 @@ jobs:
       - build-api-compatibility-check
       trigger: true
   - task: test-deploy
+    privileged: true
     file: tools/concourse/task.yml
     params:
       MESSAGE: "Deploying the built application on test environment"
@@ -108,6 +111,7 @@ jobs:
       - test-deploy
       trigger: true
   - task: test-smoke
+    privileged: true
     file: tools/concourse/task.yml
     params:
       MESSAGE: "Testing the built application on test environment"
@@ -127,6 +131,7 @@ jobs:
       - test-smoke
       trigger: true
   - task: test-rollback-deploy
+    privileged: true
     file: tools/concourse/task.yml
     params:
       MESSAGE: "Deploying the built application on test environment"
@@ -147,6 +152,7 @@ jobs:
       - test-rollback-deploy
       trigger: true
   - task: test-rollback-smoke
+    privileged: true
     file: tools/concourse/task.yml
     params:
       MESSAGE: "Testing the rolled back built application on test environment"
@@ -166,6 +172,7 @@ jobs:
       - test-rollback-smoke
       trigger: false
   - task: stage-deploy
+    privileged: true
     file: tools/concourse/task.yml
     params:
       MESSAGE: "Deploying the built application on test environment"
@@ -186,6 +193,7 @@ jobs:
       - stage-deploy
       trigger: false
   - task: stage-smoke
+    privileged: true
     file: tools/concourse/task.yml
     params:
       MESSAGE: "Testing the built application on stage environment"
@@ -205,6 +213,7 @@ jobs:
       - stage-e2e
       trigger: false
   - task: prod-deploy
+    privileged: true
     file: tools/concourse/tasks/prod-deploy/task.yml
     params:
       <<: *common-params
@@ -228,6 +237,7 @@ jobs:
       - prod-deploy
       trigger: false
   - task: prod-rollback
+    privileged: true
     file: tools/concourse/task.yml
     params:
       MESSAGE: "Rolling back to previous instance"
