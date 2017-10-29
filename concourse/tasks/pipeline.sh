@@ -6,13 +6,10 @@ echo "Scripts will be copied to [${SCRIPTS_OUTPUT_FOLDER}]"
 echo "Copying pipelines scripts"
 cd ${ROOT_FOLDER}/${REPO_RESOURCE}
 mkdir ${SCRIPTS_OUTPUT_FOLDER}
+cp -r ${ROOT_FOLDER}/${TOOLS_RESOURCE}/common/src/main/bash/* ${SCRIPTS_OUTPUT_FOLDER}/
 [[ -d "${ROOT_FOLDER}/${CUSTOM_SCRIPT_IDENTIFIER}" ]] && \
     cp -r ${ROOT_FOLDER}/${CUSTOM_SCRIPT_IDENTIFIER}/common/src/main/bash/* ${SCRIPTS_OUTPUT_FOLDER}/ || \
     echo "No custom scripts found"
-
-# If you're using some other image with Docker change these lines
-source /docker-lib.sh || echo "Failed to source docker-lib.sh... Hopefully you know what you're doing"
-start_docker || echo "Failed to start docker... Hopefully you know what you're doing"
 
 echo "Retrieving version"
 cp ${ROOT_FOLDER}/${VERSION_RESOURCE}/version ${SCRIPTS_OUTPUT_FOLDER}/
