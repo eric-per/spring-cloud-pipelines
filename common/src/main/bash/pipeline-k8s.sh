@@ -21,12 +21,12 @@ function logInToPaas() {
 	local apiUrl="${!api:-192.168.99.100:8443}"
 	echo "Path to kubectl [${KUBECTL_BIN}]"
 	chmod +x "${KUBECTL_BIN}"
-	if [[ "${KUBECTL_BIN}" = "/*" ]]; then
-		pathadd "${KUBECTL_BIN}"
-	else
+	if [[ "${KUBECTL_BIN}" != "/"* ]]; then
 		echo "Downloading CLI"
 		curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/darwin/amd64/kubectl" --fail
 		pathadd "$(pwd)/kubectl"
+	else
+		pathadd "${KUBECTL_BIN}"
 	fi
 	echo "Removing current Kubernetes configuration"
 	rm -rf "${KUBE_CONFIG_PATH}" || echo "Failed to remove Kube config. Continuing with the script"
