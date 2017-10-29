@@ -19,9 +19,14 @@ function logInToPaas() {
 	local k8sSystemName="${!systemName}"
 	local api="PAAS_${ENVIRONMENT}_API_URL"
 	local apiUrl="${!api:-192.168.99.100:8443}"
-	echo "Downloading CLI"
-	curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/darwin/amd64/kubectl" --fail
 	chmod +x "${KUBECTL_BIN}"
+	if [[ "${KUBECTL_BIN}" = "/*" ]]; then
+		pathadd "${KUBECTL_BIN}"
+	else
+		echo "Downloading CLI"
+		curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/darwin/amd64/kubectl" --fail
+		pathadd "$(pwd)/kubectl"
+	fi
 	echo "Removing current Kubernetes configuration"
 	rm -rf "${KUBE_CONFIG_PATH}" || echo "Failed to remove Kube config. Continuing with the script"
 	echo "Logging in to Kubernetes API [${apiUrl}], with cluster name [${k8sClusterName}] and user [${k8sClusterUser}]"
@@ -41,6 +46,12 @@ function logInToPaas() {
 
 	echo "CLI version"
 	"${KUBECTL_BIN}" version
+}
+
+function pathadd() {
+	if [ -d "$1" ] && [[ ":$PATH:" != *":$1:"* ]]; then
+		PATH="${PATH:+"$PATH:"}$1"
+	fi
 }
 
 function testDeploy() {
