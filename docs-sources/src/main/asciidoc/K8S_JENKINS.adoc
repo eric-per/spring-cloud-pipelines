@@ -209,6 +209,8 @@ the instructions on how to do it here - https://cloud.google.com/compute/docs/di
 
 === Connecting to a Kubo or GCE cluster
 
+IMPORTANT: Skip this step if you're not using Kubo or GCE
+
 In this section a description of steps required to deploy Jenkins and
 Artifactory to a Kubernetes cluster deployed via Kubo.
 

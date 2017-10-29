@@ -147,7 +147,7 @@ If `fly` is properly installed then it should print out the version.
 
 ==== Setup your `credentials.yml`
 
-[[creds]] The repo comes with `credentials-sample.yml` which is set up with sample data (most credentials) are set to be applicable for PCF Dev. Copy this file to a new file `credentials.yml` (the file is added to .gitignore so don't worry that you'll push it with your passwords) and edit it as you wish. For our demo jus setup:
+[[creds]] The repo comes with `credentials-sample.yml` which is set up with sample data (most credentials) are set to be applicable for PCF Dev. Copy this file to a new file `credentials.yml` (the file is added to .gitignore so don't worry that you'll push it with your passwords) and edit it as you wish. For our demo just setup:
 
   - `app-url` - url pointing to your forked `github-webhook` repo
   - `github-private-key` - your private key to clone / tag GitHub repos

@@ -896,6 +896,8 @@ the instructions on how to do it here - https://cloud.google.com/compute/docs/di
 
 === Connecting to a Kubo or GCE cluster
 
+IMPORTANT: Skip this step if you're not using Kubo or GCE
+
 In this section a description of steps required to deploy Jenkins and
 Artifactory to a Kubernetes cluster deployed via Kubo.
 
@@ -957,7 +959,7 @@ image::{jenkins-root-docs}/pks_seed.png[caption="Example of a filled out seed jo
 - Run the pipeline
 // remove::end[K8S]
 
-== FAQ
+== Jenkins FAQ
 
 Below you can find the answers to most frequently asked questions.
 
