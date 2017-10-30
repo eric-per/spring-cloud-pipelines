@@ -21,7 +21,7 @@ start_docker || echo "Failed to start docker... Hopefully you know what you're d
 source "${ROOT_FOLDER}/${TOOLS_RESOURCE}/concourse/tasks/pipeline.sh"
 
 echo "Deploying the built application on prod environment"
-cd "${ROOT_FOLDER}/${REPO_RESOURCE}"
+cd "${ROOT_FOLDER}/${REPO_RESOURCE}" || exit
 
 # shellcheck source=/dev/null
 . "${SCRIPTS_OUTPUT_FOLDER}"/prod_deploy.sh
