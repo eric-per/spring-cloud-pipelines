@@ -21,10 +21,10 @@ start_docker || echo "Failed to start docker... Hopefully you know what you're d
 source "${ROOT_FOLDER}/${TOOLS_RESOURCE}/concourse/tasks/pipeline.sh"
 
 echo "Deploying the built application on prod environment"
-cd "${ROOT_FOLDER}/${REPO_RESOURCE}" || exit
+cd "${ROOT_FOLDER}/${REPO_RESOURCE}"
 
 # shellcheck source=/dev/null
 . "${SCRIPTS_OUTPUT_FOLDER}"/prod_deploy.sh
 
 echo "Tagging the project with prod tag"
-echo "prod/${PIPELINE_VERSION}" > "${ROOT_FOLDER}/${REPO_RESOURCE}/tag"
+echo "prod/${PIPELINE_VERSION}" > "${ROOT_FOLDER}/${OUTPUT_RESOURCE}/tag"
