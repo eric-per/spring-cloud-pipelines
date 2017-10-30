@@ -40,7 +40,7 @@ function logInToPaas() {
 		echo "${k8sCaData}" > "${tmpCa}"
 		k8sCa="${tmpCa}"
 	fi
-	"${KUBECTL_BIN}" config set-cluster "${k8sClusterName}" --server="${kubeUrl}" --certificate-authority="${k8sCa}" --embed-certs=true
+	"${KUBECTL_BIN}" config set-cluster "${k8sClusterName}" --server="${kubeUrl}" --certificate-authority="${k8sCa}" --embed-certs=true --kubeconfig="${KUBE_CONFIG_PATH}"
 	# TOKEN will get injected as a credential if present
 	if [[ "${TOKEN}" != "" ]]; then
 		"${KUBECTL_BIN}" config set-credentials "${k8sClusterUser}" --token="${TOKEN}"
