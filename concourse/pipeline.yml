@@ -300,7 +300,7 @@ paas-prod-params: &paas-prod-params
   # remove::end[CF]
   # remove::start[K8S]
   PAAS_PROD_CA: ((paas-prod-ca))
-  PAAS_PROD_CLIENT_TOKEN_PATH: ((paas-prod-client-token-path))
+  PAAS_PROD_CLIENT_TOKEN: ((paas-prod-client-token))
   PAAS_PROD_SYSTEM_NAME: ((paas-prod-system-name))
   PAAS_PROD_CLUSTER_NAME: ((paas-prod-cluster-name))
   PAAS_PROD_CLUSTER_USERNAME: ((paas-prod-cluster-username))
@@ -317,7 +317,7 @@ paas-stage-params: &paas-stage-params
   # remove::end[CF]
   # remove::start[K8S]
   PAAS_STAGE_CA: ((paas-stage-ca))
-  PAAS_STAGE_CLIENT_TOKEN_PATH: ((paas-stage-client-token-path))
+  PAAS_STAGE_CLIENT_TOKEN: ((paas-stage-client-token))
   PAAS_STAGE_SYSTEM_NAME: ((paas-stage-system-name))
   PAAS_STAGE_CLUSTER_NAME: ((paas-stage-cluster-name))
   PAAS_STAGE_CLUSTER_USERNAME: ((paas-stage-cluster-username))
@@ -334,7 +334,7 @@ paas-test-params: &paas-test-params
   # remove::end[CF]
   # remove::start[K8S]
   PAAS_TEST_CA: ((paas-test-ca))
-  PAAS_TEST_CLIENT_TOKEN_PATH: ((paas-test-client-token-path))
+  PAAS_TEST_CLIENT_TOKEN: ((paas-test-client-token))
   PAAS_TEST_SYSTEM_NAME: ((paas-test-system-name))
   PAAS_TEST_CLUSTER_NAME: ((paas-test-cluster-name))
   PAAS_TEST_CLUSTER_USERNAME: ((paas-test-cluster-username))

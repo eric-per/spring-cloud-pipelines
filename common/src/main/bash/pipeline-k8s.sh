@@ -34,7 +34,7 @@ function logInToPaas() {
 	echo "Logging in to Kubernetes API [${apiUrl}], with cluster name [${k8sClusterName}] and user [${k8sClusterUser}]"
 	local caContent
 	if [[ "${k8sCaData}" != "" ]]; then
-		tmpDir="\$(mktemp -d)"
+		tmpDir="$(mktemp -d)"
 		tmpCa="${tmpDir}/ca"
 		trap "{ rm -rf \$tmpDir; }" EXIT
 		echo "${k8sCaData}" > "${tmpCa}"
