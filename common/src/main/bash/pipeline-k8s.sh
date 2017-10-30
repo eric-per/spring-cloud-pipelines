@@ -756,6 +756,7 @@ if [[ "${KUBE_CONFIG_PATH}" == "" ]]; then
 	KUBE_CONFIG_PATH="$(mktemp -d 2>/dev/null || mktemp -d -t 'sc-pipelines-k8s')"
 	trap '{ rm -rf ${KUBE_CONFIG_PATH}; }' EXIT
 fi
+echo "Path to Kube config is [${KUBE_CONFIG_PATH}]"
 export KUBECTL_BIN
 KUBECTL_BIN="${KUBECTL_BIN:-kubectl}"
 
