@@ -3,11 +3,13 @@
 set -e
 
 function logInToPaas() {
-	local ca="PAAS_${ENVIRONMENT}_CA"
+	local ca="PAAS_${ENVIRONMENT}_CA_PATH"
 	local k8sCa="${!ca}"
-	local clientCert="PAAS_${ENVIRONMENT}_CLIENT_CERT"
+	local caData="PAAS_${ENVIRONMENT}_CA"
+	local k8sCaData="${!caData}"
+	local clientCert="PAAS_${ENVIRONMENT}_CLIENT_CERT_PATH"
 	local k8sClientCert="${!clientCert}"
-	local clientKey="PAAS_${ENVIRONMENT}_CLIENT_KEY"
+	local clientKey="PAAS_${ENVIRONMENT}_CLIENT_KEY_PATH"
 	local k8sClientKey="${!clientKey}"
 	local tokenPath="PAAS_${ENVIRONMENT}_CLIENT_TOKEN_PATH"
 	local k8sTokenPath="${!tokenPath}"
@@ -19,6 +21,7 @@ function logInToPaas() {
 	local k8sSystemName="${!systemName}"
 	local api="PAAS_${ENVIRONMENT}_API_URL"
 	local apiUrl="${!api:-192.168.99.100:8443}"
+	local kubeUrl="https://${apiUrl}"
 	echo "Path to kubectl [${KUBECTL_BIN}]"
 	if [[ "${KUBECTL_BIN}" != "/"* ]]; then
 		echo "Downloading CLI"
@@ -29,7 +32,15 @@ function logInToPaas() {
 	echo "Removing current Kubernetes configuration"
 	rm -rf "${KUBE_CONFIG_PATH}" || echo "Failed to remove Kube config. Continuing with the script"
 	echo "Logging in to Kubernetes API [${apiUrl}], with cluster name [${k8sClusterName}] and user [${k8sClusterUser}]"
-	"${KUBECTL_BIN}" config set-cluster "${k8sClusterName}" --server="https://${apiUrl}" --certificate-authority="${k8sCa}" --embed-certs=true
+	local caContent
+	if [[ "${k8sCaData}" != "" ]]; then
+		tmpDir="\$(mktemp -d)"
+		tmpCa="${tmpDir}/ca"
+		trap "{ rm -rf \$tmpDir; }" EXIT
+		echo "${k8sCaData}" > "${tmpCa}"
+		k8sCa="${tmpCa}"
+	fi
+	"${KUBECTL_BIN}" config set-cluster "${k8sClusterName}" --server="${kubeUrl}" --certificate-authority="${k8sCa}" --embed-certs=true
 	# TOKEN will get injected as a credential if present
 	if [[ "${TOKEN}" != "" ]]; then
 		"${KUBECTL_BIN}" config set-credentials "${k8sClusterUser}" --token="${TOKEN}"
