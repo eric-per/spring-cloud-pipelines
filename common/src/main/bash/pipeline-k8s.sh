@@ -40,7 +40,8 @@ function logInToPaas() {
 		echo "${k8sCaData}" > "${tmpCa}"
 		k8sCa="${tmpCa}"
 	fi
-	"${KUBECTL_BIN}" config set-cluster "${k8sClusterName}" --server="${kubeUrl}" --certificate-authority="${k8sCa}" --embed-certs=true --kubeconfig="${KUBE_CONFIG_PATH}"
+	KUBECTL_BIN="${KUBECTL_BIN} --kubeconfig=${KUBE_CONFIG_PATH}"
+	"${KUBECTL_BIN}" config set-cluster "${k8sClusterName}" --server="${kubeUrl}" --certificate-authority="${k8sCa}" --embed-certs=true
 	# TOKEN will get injected as a credential if present
 	if [[ "${TOKEN}" != "" ]]; then
 		"${KUBECTL_BIN}" config set-credentials "${k8sClusterUser}" --token="${TOKEN}"
@@ -49,12 +50,12 @@ function logInToPaas() {
 		tokenContent="$(cat "${k8sTokenPath}")"
 		"${KUBECTL_BIN}" config set-credentials "${k8sClusterUser}" --token="${tokenContent}" --kubeconfig="${KUBE_CONFIG_PATH}"
 	elif [[ "${k8sClientKey}" != "" && "${k8sClientCert}" != "" ]]; then
-		"${KUBECTL_BIN}" config set-credentials "${k8sClusterUser}" --certificate-authority="${k8sCa}" --client-key="${k8sClientKey}" --client-certificate="${k8sClientCert}"  --kubeconfig="${KUBE_CONFIG_PATH}"
+		"${KUBECTL_BIN}" config set-credentials "${k8sClusterUser}" --certificate-authority="${k8sCa}" --client-key="${k8sClientKey}" --client-certificate="${k8sClientCert}"
 	else
-		"${KUBECTL_BIN}" config set-credentials "${k8sClusterUser}" --certificate-authority="${k8sCa}"  --kubeconfig="${KUBE_CONFIG_PATH}"
+		"${KUBECTL_BIN}" config set-credentials "${k8sClusterUser}" --certificate-authority="${k8sCa}"
 	fi
-	"${KUBECTL_BIN}" config set-context "${k8sSystemName}" --cluster="${k8sClusterName}" --user="${k8sClusterUser}"  --kubeconfig="${KUBE_CONFIG_PATH}"
-	"${KUBECTL_BIN}" config use-context "${k8sSystemName}" --kubeconfig="${KUBE_CONFIG_PATH}"
+	"${KUBECTL_BIN}" config set-context "${k8sSystemName}" --cluster="${k8sClusterName}" --user="${k8sClusterUser}"
+	"${KUBECTL_BIN}" config use-context "${k8sSystemName}"
 
 	echo "CLI version"
 	"${KUBECTL_BIN}" version
