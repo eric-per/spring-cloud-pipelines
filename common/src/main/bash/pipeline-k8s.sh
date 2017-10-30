@@ -29,12 +29,12 @@ function logInToPaas() {
 		KUBECTL_BIN="$(pwd)/${KUBECTL_BIN}"
 	fi
 	chmod +x "${KUBECTL_BIN}"
-	echo "Removing current Kubernetes configuration"
+	echo "Removing current Kubernetes configuration from [${KUBE_CONFIG_PATH}]"
 	rm -rf "${KUBE_CONFIG_PATH}" || echo "Failed to remove Kube config. Continuing with the script"
 	echo "Logging in to Kubernetes API [${apiUrl}], with cluster name [${k8sClusterName}] and user [${k8sClusterUser}]"
 	local caContent
 	if [[ "${k8sCaData}" != "" ]]; then
-		tmpDir="$(mktemp -d)"
+		tmpDir="$(mktemp -d 2>/dev/null || mktemp -d -t 'sc-pipelines-k8s-ca')"
 		tmpCa="${tmpDir}/ca"
 		trap "{ rm -rf \$tmpDir; }" EXIT
 		echo "${k8sCaData}" > "${tmpCa}"
@@ -753,8 +753,9 @@ SYSTEM="$(system)"
 export KUBE_CONFIG_PATH
 KUBE_CONFIG_PATH="${KUBE_CONFIG_PATH}"
 if [[ "${KUBE_CONFIG_PATH}" == "" ]]; then
-	KUBE_CONFIG_PATH="$(mktemp -d 2>/dev/null || mktemp -d -t 'sc-pipelines-k8s')"
-	trap '{ rm -rf ${KUBE_CONFIG_PATH}; }' EXIT
+	tmpKubeConfigPath="$(mktemp -d 2>/dev/null || mktemp -d -t 'sc-pipelines-k8s')"
+	KUBE_CONFIG_PATH="${tmpKubeConfigPath}/config"
+	trap '{ rm -f ${KUBE_CONFIG_PATH}; }' EXIT
 fi
 echo "Path to Kube config is [${KUBE_CONFIG_PATH}]"
 export KUBECTL_BIN
