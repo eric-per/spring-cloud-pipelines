@@ -142,6 +142,9 @@ If `fly` is properly installed then it should print out the version.
 [[concourse-pipeline-credentials-k8s]]
 ==== Setup your `credentials.yml`
 
+There is a sample credentials file called `credentials-sample-k8s.yml`
+prepared for `k8s`
+
 To allow the Concourse worker's spawned container to connect to
 Kubernetes cluster you will need to pass the CA contents and the
 auth token.
@@ -153,7 +156,7 @@ To get the contents of CA for GCE just type
 cat ~/.kube/config
 ----
 
-and you will get sth like this (copy the contents of `certificate-authority-data`):
+and you will get sth like this:
 
 [source,bash]
 ----
@@ -165,12 +168,25 @@ clusters:
   name: someName
 ----
 
+To get the CA you have to copy the contents of `certificate-authority-data` to
+a file and decode it from base64
+
+[source,bash]
+----
+$ echo "...data..." > /tmp/foo
+$ base64 -D /tmp/foo
+----
+
+Set that value under `paas-test-ca`, `paas-stage-ca` and `paas-stage-ca`
+
 To get the token just type:
 
 [source,bash]
 ----
-gcloud config config-helper --format=json | jq '.credential.access_token'
+$ kubectl exec -it $( kubectl get pods | grep concourse-web | awk '{print $1}' ) -- cat /var/run/secrets/kubernetes.io/serviceaccount/token
 ----
+
+Set that value under `paas-test-client-token`, `paas-stage-client-token` and `paas-prod-client-token`
 
 [[concourse-pipeline-run-k8s]]
 ==== Run the `github-webhook` pipeline

@@ -708,7 +708,7 @@ If `fly` is properly installed then it should print out the version.
 [[concourse-pipeline-credentials-cf]]
 ==== Setup your `credentials.yml`
 
-[[creds]] The repo comes with `credentials-sample.yml` which is set up with sample data (most credentials) are set to be applicable for PCF Dev. Copy this file to a new file `credentials.yml` (the file is added to .gitignore so don't worry that you'll push it with your passwords) and edit it as you wish. For our demo just setup:
+[[creds]] The repo comes with `credentials-sample-cf.yml` which is set up with sample data (most credentials) are set to be applicable for PCF Dev. Copy this file to a new file `credentials.yml` (the file is added to .gitignore so don't worry that you'll push it with your passwords) and edit it as you wish. For our demo just setup:
 
   - `app-url` - url pointing to your forked `github-webhook` repo
   - `github-private-key` - your private key to clone / tag GitHub repos
@@ -718,7 +718,7 @@ If you don't have a Docker Machine just execute `./whats_my_ip.sh` script to
 get an external IP that you can pass to your `repo-with-binaries` instead of the default
 Docker Machine IP.
 
-Below you can see what environment variables are required by the scripts. To the right hand side you can see the default values for PCF Dev that we set in the `credentials-sample.yml`.
+Below you can see what environment variables are required by the scripts. To the right hand side you can see the default values for PCF Dev that we set in the `credentials-sample-cf.yml`.
 
 [frame="topbot",options="header,footer"]
 |======================
@@ -959,7 +959,7 @@ If `fly` is properly installed then it should print out the version.
 [[concourse-pipeline-credentials-k8s]]
 ==== Setup your `credentials.yml`
 
-The repo comes with `credentials-sample.yml` which is set up with sample data (most credentials) are set to be applicable for Minikube.
+The repo comes with `credentials-sample-cf.yml` which is set up with sample data (most credentials) are set to be applicable for Minikube.
 Copy this file to a new file `credentials.yml` (the file is added to .gitignore so don't worry that you'll push it with your passwords)
 and edit it as you wish. For our demo just setup:
 
@@ -971,7 +971,7 @@ If you don't have a Docker Machine just execute `./whats_my_ip.sh` script to
 get an external IP that you can pass to your `repo-with-binaries` instead of the default
 Docker Machine IP.
 
-Below you can see what environment variables are required by the scripts. To the right hand side you can see the default values for PCF Dev that we set in the `credentials-sample.yml`.
+Below you can see what environment variables are required by the scripts. To the right hand side you can see the default values for PCF Dev that we set in the `credentials-sample-cf.yml`.
 
 [frame="topbot",options="header,footer"]
 |======================
