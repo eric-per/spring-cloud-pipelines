@@ -1,6 +1,7 @@
 #!/bin/bash
 
-export ROOT_FOLDER=$( pwd )
+export ROOT_FOLDER
+ROOT_FOLDER="$( pwd )"
 export REPO_RESOURCE=repo
 export TOOLS_RESOURCE=tools
 export VERSION_RESOURCE=version
@@ -12,12 +13,15 @@ echo "Tools resource folder is [${TOOLS_RESOURCE}]"
 echo "Version resource folder is [${VERSION_RESOURCE}]"
 
 # If you're using some other image with Docker change these lines
+# shellcheck source=/dev/null
 source /docker-lib.sh || echo "Failed to source docker-lib.sh... Hopefully you know what you're doing"
 start_docker || echo "Failed to start docker... Hopefully you know what you're doing"
 
-source ${ROOT_FOLDER}/${TOOLS_RESOURCE}/concourse/tasks/pipeline.sh
+# shellcheck source=/dev/null
+source "${ROOT_FOLDER}/${TOOLS_RESOURCE}/concourse/tasks/pipeline.sh"
 
 echo "${MESSAGE}"
-cd "${ROOT_FOLDER}/${REPO_RESOURCE}"
+cd "${ROOT_FOLDER}/${REPO_RESOURCE}" || exit
 
-. ${SCRIPTS_OUTPUT_FOLDER}/${SCRIPT_TO_RUN}
+# shellcheck source=/dev/null
+. "${SCRIPTS_OUTPUT_FOLDER}/${SCRIPT_TO_RUN}"

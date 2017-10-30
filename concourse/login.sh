@@ -5,4 +5,4 @@ ALIAS=${2:-docker}
 USERNAME=${3:-username}
 PASSWORD=${4:-changeme}
 
-fly -t ${ALIAS} login -c http://${ROOT_ADDRESS} -u=${USERNAME} -p=${PASSWORD}
+fly -t "${ALIAS}" login -c http://"${ROOT_ADDRESS}" -u="${USERNAME}" -p="${PASSWORD}"
