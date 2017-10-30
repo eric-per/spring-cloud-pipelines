@@ -56,7 +56,7 @@ init a Git project there and modify it as you wish.
 
 [source,bash]
 ----
-$ curl -LOk https://github.com/spring-cloud/spring-cloud-pipelines/archive/v1.0.0.M4.zip
+$ curl -LOk https://github.com/spring-cloud/spring-cloud-pipelines/archive/v1.0.0.M6.zip
 $ unzip v1.0.0.M6.zip
 $ cd spring-cloud-pipelines-v1.0.0.M6
 $ git init
@@ -959,59 +959,55 @@ If `fly` is properly installed then it should print out the version.
 [[concourse-pipeline-credentials-k8s]]
 ==== Setup your `credentials.yml`
 
-The repo comes with `credentials-sample-cf.yml` which is set up with sample data (most credentials) are set to be applicable for Minikube.
-Copy this file to a new file `credentials.yml` (the file is added to .gitignore so don't worry that you'll push it with your passwords)
-and edit it as you wish. For our demo just setup:
+There is a sample credentials file called `credentials-sample-k8s.yml`
+prepared for `k8s`. You can use it as a base for your `credentials.yml`.
 
-  - `app-url` - url pointing to your forked `github-webhook` repo
-  - `github-private-key` - your private key to clone / tag GitHub repos
-  - `repo-with-binaries` - the IP is set to the defaults for Docker Machine. You should update it to point to your setup
+To allow the Concourse worker's spawned container to connect to
+Kubernetes cluster you will need to pass the CA contents and the
+auth token.
 
-If you don't have a Docker Machine just execute `./whats_my_ip.sh` script to
-get an external IP that you can pass to your `repo-with-binaries` instead of the default
-Docker Machine IP.
+To get the contents of CA for GCE just execute
 
-Below you can see what environment variables are required by the scripts. To the right hand side you can see the default values for PCF Dev that we set in the `credentials-sample-cf.yml`.
+[source,bash]
+----
+$ kubectl get secret $(kubectl get secret | grep default-token | awk '{print $1}') -o jsonpath='{.data.ca\.crt}' | base64 --decode
+----
 
-[frame="topbot",options="header,footer"]
-|======================
-|Property Name  | Property Description | Default value
-|PAAS_TEST_API_URL | The URL to the CF Api for TEST env| api.local.pcfdev.io
-|PAAS_STAGE_API_URL | The URL to the CF Api for STAGE env | api.local.pcfdev.io
-|PAAS_PROD_API_URL | The URL to the CF Api for PROD env | api.local.pcfdev.io
-|PAAS_TEST_ORG    | Name of the org for the test env | pcfdev-org
-|PAAS_TEST_SPACE  | Name of the space for the test env | pcfdev-space
-|PAAS_STAGE_ORG   | Name of the org for the stage env | pcfdev-org
-|PAAS_STAGE_SPACE | Name of the space for the stage env | pcfdev-space
-|PAAS_PROD_ORG   | Name of the org for the prod env | pcfdev-org
-|PAAS_PROD_SPACE | Name of the space for the prod env | pcfdev-space
-|REPO_WITH_BINARIES | URL to repo with the deployed jars | http://192.168.99.100:8081/artifactory/libs-release-local
-|M2_SETTINGS_REPO_ID | The id of server from Maven settings.xml | artifactory-local
-|PAAS_HOSTNAME_UUID | Additional suffix for the route. In a shared environment the default routes can be already taken |
-|APP_MEMORY_LIMIT | How much memory should be used by the infra apps (Eureka, Stub Runner etc.) | 256m
-|JAVA_BUILDPACK_URL | The URL to the Java buildpack to be used by CF | https://github.com/cloudfoundry/java-buildpack.git#v3.8.1
-|BUILD_OPTIONS | Additional options you would like to pass to the Maven / Gradle build |
-|======================
+To get the token just type:
+
+[source,bash]
+----
+$ kubectl get secret $(kubectl get secret | grep default-token | awk '{print $1}') -o jsonpath='{.data.token}' | base64 --decode
+----
+
+Set that value under `paas-test-client-token`, `paas-stage-client-token` and `paas-prod-client-token`
 
 [[concourse-pipeline-build-k8s]]
 ==== Build the pipeline
 
-Log in (e.g. for Concourse running at `192.168.99.100` - if you don't provide any value then `localhost` is assumed). If you execute this script  (it assumes that either `fly` is on your `PATH` or it's in the same folder as the script is):
+After running Concourse you should get the following output in your terminal
+
+[bash,source]
+----
+$ export POD_NAME=$(kubectl get pods --namespace default -l "app=concourse-web" -o jsonpath="{.items[0].metadata.name}")
+$ echo "Visit http://127.0.0.1:8080 to use Concourse"
+$ kubectl port-forward --namespace default $POD_NAME 8080:8080
+Visit http://127.0.0.1:8080 to use Concourse
+----
+
+Log in (e.g. for Concourse running at `127.0.0.1` - if you don't provide any value then `localhost` is assumed). If you execute this script  (it assumes that either `fly` is on your `PATH` or it's in the same folder as the script is):
 
 [source,bash]
 ----
-./login.sh 192.168.99.100
+$ fly -t k8s login -c http://localhost:8080 -u concourse -p concourse
 ----
 
 Next run the command to create the pipeline.
 
 [source,bash]
 ----
-./set_pipeline.sh
+$ ./set_pipeline.sh github-webhook k8s credentials-k8s.yml
 ----
-
-Then you'll create a `github-webhook` pipeline under the `docker` alias, using the provided `credentials.yml` file.
-You can override these values in exactly that order (e.g. `./set-pipeline.sh some-project another-target some-other-credentials.yml`)
 
 [[concourse-pipeline-run-k8s]]
 ==== Run the `github-webhook` pipeline
@@ -1029,7 +1025,7 @@ image::{concourse-root-docs}/concourse_team_main.png[caption="Step 2: ", title="
 {nbsp}
 {nbsp}
 
-image::{concourse-root-docs}/concourse_user_pass.png[caption="Step 3: ", title="Log in with `concourse` user and `changeme` password"]
+image::{concourse-root-docs}/concourse_user_pass.png[caption="Step 3: ", title="Log in with `concourse` user and `concourse` password"]
 
 {nbsp}
 {nbsp}
@@ -2760,11 +2756,96 @@ $ ./k8s-helper.sh setup-prod-infra
 
 === Running Prometheus on Kubernetes
 
-//TODO: Add this
+Use Helm to install Prometheus. We will point it to the services
+deployed to our cluster.
+
+Create a file called `values.yml`.
+
+.values.yml
+[source,yml]
+----
+serverFiles.prometheus.yml: |
+    scrape_configs:
+      - job_name: 'demo-app'
+        scrape_interval: 5s
+        metrics_path: '/prometheus'
+        static_configs:
+          - targets: ['github-analytics.sc-pipelines-prod.svc.cluster.local']
+----
+
+Next, let's create the prometheus installation with the predefined values.
+
+[source,bash]
+----
+$ helm install --name sc-pipelines-prometheus stable/prometheus -f values.yml
+----
+
+Then you should see the following output
+
+[source,bash]
+----
+NOTES:
+The Prometheus server can be accessed via port 80 on the following DNS name from within your cluster:
+sc-pipelines-prometheus-prometheus-server.default.svc.cluster.local
+
+
+Get the Prometheus server URL by running these commands in the same shell:
+  export POD_NAME=$(kubectl get pods --namespace default -l "app=prometheus,component=server" -o jsonpath="{.items[0].metadata.name}")
+  kubectl --namespace default port-forward $POD_NAME 9090
+
+
+The Prometheus alertmanager can be accessed via port 80 on the following DNS name from within your cluster:
+sc-pipelines-prometheus-prometheus-alertmanager.default.svc.cluster.local
+
+
+Get the Alertmanager URL by running these commands in the same shell:
+  export POD_NAME=$(kubectl get pods --namespace default -l "app=prometheus,component=alertmanager" -o jsonpath="{.items[0].metadata.name}")
+  kubectl --namespace default port-forward $POD_NAME 9093
+
+
+The Prometheus PushGateway can be accessed via port 9091 on the following DNS name from within your cluster:
+sc-pipelines-prometheus-prometheus-pushgateway.default.svc.cluster.local
+
+
+Get the PushGateway URL by running these commands in the same shell:
+  export POD_NAME=$(kubectl get pods --namespace default -l "app=prometheus,component=pushgateway" -o jsonpath="{.items[0].metadata.name}")
+  kubectl --namespace default port-forward $POD_NAME 9093
+
+For more information on running Prometheus, visit:
+https://prometheus.io/
+----
+
 
 === Running Grafana on Kubernetes
 
-//TODO: Add this
+Use Helm to install Grafana
+
+[source,bash]
+----
+$ helm install --name sc-pipelines-grafana stable/grafana
+----
+
+[source,bash]
+----
+NOTES:
+1. Get your 'admin' user password by running:
+
+   kubectl get secret --namespace default sc-pipelines-grafana-grafana -o jsonpath="{.data.grafana-admin-password}" | base64 --decode ; echo
+
+2. The Grafana server can be accessed via port 80 on the following DNS name from within your cluster:
+
+   sc-pipelines-grafana-grafana.default.svc.cluster.local
+
+   Get the Grafana URL to visit by running these commands in the same shell:
+
+     export POD_NAME=$(kubectl get pods --namespace default -l "app=sc-pipelines-grafana-grafana,component=grafana" -o jsonpath="{.items[0].metadata.name}")
+     kubectl --namespace default port-forward $POD_NAME 3000
+
+3. Login with the password from step 1 and the username: admin
+----
+
+Perform the aforementioned steps and add the Grafana's datasource
+as Prometheus with URL `http://sc-pipelines-prometheus-prometheus-server.default.svc.cluster.local`
 // remove::end[K8S]
 
 == Building the project

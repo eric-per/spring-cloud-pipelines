@@ -21,8 +21,93 @@ $ ./k8s-helper.sh setup-prod-infra
 
 === Running Prometheus on Kubernetes
 
-//TODO: Add this
+Use Helm to install Prometheus. We will point it to the services
+deployed to our cluster.
+
+Create a file called `values.yml`.
+
+.values.yml
+[source,yml]
+----
+serverFiles.prometheus.yml: |
+    scrape_configs:
+      - job_name: 'demo-app'
+        scrape_interval: 5s
+        metrics_path: '/prometheus'
+        static_configs:
+          - targets: ['github-analytics.sc-pipelines-prod.svc.cluster.local']
+----
+
+Next, let's create the prometheus installation with the predefined values.
+
+[source,bash]
+----
+$ helm install --name sc-pipelines-prometheus stable/prometheus -f values.yml
+----
+
+Then you should see the following output
+
+[source,bash]
+----
+NOTES:
+The Prometheus server can be accessed via port 80 on the following DNS name from within your cluster:
+sc-pipelines-prometheus-prometheus-server.default.svc.cluster.local
+
+
+Get the Prometheus server URL by running these commands in the same shell:
+  export POD_NAME=$(kubectl get pods --namespace default -l "app=prometheus,component=server" -o jsonpath="{.items[0].metadata.name}")
+  kubectl --namespace default port-forward $POD_NAME 9090
+
+
+The Prometheus alertmanager can be accessed via port 80 on the following DNS name from within your cluster:
+sc-pipelines-prometheus-prometheus-alertmanager.default.svc.cluster.local
+
+
+Get the Alertmanager URL by running these commands in the same shell:
+  export POD_NAME=$(kubectl get pods --namespace default -l "app=prometheus,component=alertmanager" -o jsonpath="{.items[0].metadata.name}")
+  kubectl --namespace default port-forward $POD_NAME 9093
+
+
+The Prometheus PushGateway can be accessed via port 9091 on the following DNS name from within your cluster:
+sc-pipelines-prometheus-prometheus-pushgateway.default.svc.cluster.local
+
+
+Get the PushGateway URL by running these commands in the same shell:
+  export POD_NAME=$(kubectl get pods --namespace default -l "app=prometheus,component=pushgateway" -o jsonpath="{.items[0].metadata.name}")
+  kubectl --namespace default port-forward $POD_NAME 9093
+
+For more information on running Prometheus, visit:
+https://prometheus.io/
+----
+
 
 === Running Grafana on Kubernetes
 
-//TODO: Add this
+Use Helm to install Grafana
+
+[source,bash]
+----
+$ helm install --name sc-pipelines-grafana stable/grafana
+----
+
+[source,bash]
+----
+NOTES:
+1. Get your 'admin' user password by running:
+
+   kubectl get secret --namespace default sc-pipelines-grafana-grafana -o jsonpath="{.data.grafana-admin-password}" | base64 --decode ; echo
+
+2. The Grafana server can be accessed via port 80 on the following DNS name from within your cluster:
+
+   sc-pipelines-grafana-grafana.default.svc.cluster.local
+
+   Get the Grafana URL to visit by running these commands in the same shell:
+
+     export POD_NAME=$(kubectl get pods --namespace default -l "app=sc-pipelines-grafana-grafana,component=grafana" -o jsonpath="{.items[0].metadata.name}")
+     kubectl --namespace default port-forward $POD_NAME 3000
+
+3. Login with the password from step 1 and the username: admin
+----
+
+Perform the aforementioned steps and add the Grafana's datasource
+as Prometheus with URL `http://sc-pipelines-prometheus-prometheus-server.default.svc.cluster.local`

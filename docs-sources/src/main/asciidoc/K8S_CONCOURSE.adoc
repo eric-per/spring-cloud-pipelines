@@ -143,50 +143,54 @@ If `fly` is properly installed then it should print out the version.
 ==== Setup your `credentials.yml`
 
 There is a sample credentials file called `credentials-sample-k8s.yml`
-prepared for `k8s`
+prepared for `k8s`. You can use it as a base for your `credentials.yml`.
 
 To allow the Concourse worker's spawned container to connect to
 Kubernetes cluster you will need to pass the CA contents and the
 auth token.
 
-To get the contents of CA for GCE just type
+To get the contents of CA for GCE just execute
 
 [source,bash]
 ----
-cat ~/.kube/config
+$ kubectl get secret $(kubectl get secret | grep default-token | awk '{print $1}') -o jsonpath='{.data.ca\.crt}' | base64 --decode
 ----
-
-and you will get sth like this:
-
-[source,bash]
-----
-apiVersion: v1
-clusters:
-- cluster:
-    certificate-authority-data: ...data...
-    server: https://ipOfTheServer
-  name: someName
-----
-
-To get the CA you have to copy the contents of `certificate-authority-data` to
-a file and decode it from base64
-
-[source,bash]
-----
-$ echo "...data..." > /tmp/foo
-$ base64 -D /tmp/foo
-----
-
-Set that value under `paas-test-ca`, `paas-stage-ca` and `paas-stage-ca`
 
 To get the token just type:
 
 [source,bash]
 ----
-$ kubectl exec -it $( kubectl get pods | grep concourse-web | awk '{print $1}' ) -- cat /var/run/secrets/kubernetes.io/serviceaccount/token
+$ kubectl get secret $(kubectl get secret | grep default-token | awk '{print $1}') -o jsonpath='{.data.token}' | base64 --decode
 ----
 
 Set that value under `paas-test-client-token`, `paas-stage-client-token` and `paas-prod-client-token`
+
+[[concourse-pipeline-build-k8s]]
+==== Build the pipeline
+
+After running Concourse you should get the following output in your terminal
+
+[bash,source]
+----
+$ export POD_NAME=$(kubectl get pods --namespace default -l "app=concourse-web" -o jsonpath="{.items[0].metadata.name}")
+$ echo "Visit http://127.0.0.1:8080 to use Concourse"
+$ kubectl port-forward --namespace default $POD_NAME 8080:8080
+Visit http://127.0.0.1:8080 to use Concourse
+----
+
+Log in (e.g. for Concourse running at `127.0.0.1` - if you don't provide any value then `localhost` is assumed). If you execute this script  (it assumes that either `fly` is on your `PATH` or it's in the same folder as the script is):
+
+[source,bash]
+----
+$ fly -t k8s login -c http://localhost:8080 -u concourse -p concourse
+----
+
+Next run the command to create the pipeline.
+
+[source,bash]
+----
+$ ./set_pipeline.sh github-webhook k8s credentials-k8s.yml
+----
 
 [[concourse-pipeline-run-k8s]]
 ==== Run the `github-webhook` pipeline
@@ -204,7 +208,7 @@ image::{concourse-root-docs}/concourse_team_main.png[caption="Step 2: ", title="
 {nbsp}
 {nbsp}
 
-image::{concourse-root-docs}/concourse_user_pass.png[caption="Step 3: ", title="Log in with `concourse` user and `changeme` password"]
+image::{concourse-root-docs}/concourse_user_pass.png[caption="Step 3: ", title="Log in with `concourse` user and `concourse` password"]
 
 {nbsp}
 {nbsp}
