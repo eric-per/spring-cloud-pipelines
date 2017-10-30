@@ -48,8 +48,10 @@ function logInToPaas() {
 		local tokenContent
 		tokenContent="$(cat "${k8sTokenPath}")"
 		"${KUBECTL_BIN}" config set-credentials "${k8sClusterUser}" --token="${tokenContent}" --kubeconfig="${KUBE_CONFIG_PATH}"
-	else
+	elif [[ "${k8sClientKey}" != "" && "${k8sClientCert}" != "" ]]; then
 		"${KUBECTL_BIN}" config set-credentials "${k8sClusterUser}" --certificate-authority="${k8sCa}" --client-key="${k8sClientKey}" --client-certificate="${k8sClientCert}"  --kubeconfig="${KUBE_CONFIG_PATH}"
+	else
+		"${KUBECTL_BIN}" config set-credentials "${k8sClusterUser}" --certificate-authority="${k8sCa}"  --kubeconfig="${KUBE_CONFIG_PATH}"
 	fi
 	"${KUBECTL_BIN}" config set-context "${k8sSystemName}" --cluster="${k8sClusterName}" --user="${k8sClusterUser}"  --kubeconfig="${KUBE_CONFIG_PATH}"
 	"${KUBECTL_BIN}" config use-context "${k8sSystemName}" --kubeconfig="${KUBE_CONFIG_PATH}"
@@ -750,7 +752,7 @@ export SYSTEM
 SYSTEM="$(system)"
 export KUBE_CONFIG_PATH
 KUBE_CONFIG_PATH="${KUBE_CONFIG_PATH}"
-if [[ ! -z "${KUBE_CONFIG_PATH}" ]]; then
+if [[ "${KUBE_CONFIG_PATH}" == "" ]]; then
 	KUBE_CONFIG_PATH="$(mktemp -d 2>/dev/null || mktemp -d -t 'sc-pipelines-k8s')"
 	trap '{ rm -rf ${KUBE_CONFIG_PATH}; }' EXIT
 fi
