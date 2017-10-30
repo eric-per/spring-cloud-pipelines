@@ -11,6 +11,8 @@ function logInToPaas() {
 	local k8sClientCert="${!clientCert}"
 	local clientKey="PAAS_${ENVIRONMENT}_CLIENT_KEY_PATH"
 	local k8sClientKey="${!clientKey}"
+	local tokenData="PAAS_${ENVIRONMENT}_CLIENT_TOKEN"
+	local k8sToken="${!tokenData}"
 	local tokenPath="PAAS_${ENVIRONMENT}_CLIENT_TOKEN_PATH"
 	local k8sTokenPath="${!tokenPath}"
 	local clusterName="PAAS_${ENVIRONMENT}_CLUSTER_NAME"
@@ -43,7 +45,8 @@ function logInToPaas() {
 	KUBECTL_BIN="${KUBECTL_BIN} --kubeconfig=${KUBE_CONFIG_PATH}"
 	"${KUBECTL_BIN}" config set-cluster "${k8sClusterName}" --server="${kubeUrl}" --certificate-authority="${k8sCa}" --embed-certs=true
 	# TOKEN will get injected as a credential if present
-	if [[ "${TOKEN}" != "" ]]; then
+	if [[ "${TOKEN}" != "" || "${k8sToken}" != "" ]]; then
+		TOKEN="${TOKEN:-${k8sToken}}"
 		"${KUBECTL_BIN}" config set-credentials "${k8sClusterUser}" --token="${TOKEN}"
 	elif [[ "${k8sTokenPath}" != "" ]]; then
 		local tokenContent
