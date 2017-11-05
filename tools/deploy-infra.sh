@@ -23,7 +23,7 @@ if [[ -z "${POTENTIAL_DOCKER_HOST}" ]]; then
     POTENTIAL_DOCKER_HOST="localhost"
 fi
 
-ARTIFACTORY_URL="${ARTIFACTORY_URL:-http://admin:password@${POTENTIAL_DOCKER_HOST}:8081/artifactory/libs-release-local}"
+ARTIFACTORY_URL="${ARTIFACTORY_URL:-http://admin:password@${POTENTIAL_DOCKER_HOST}:8081/artifactory/example-repo-local}"
 ARTIFACTORY_ID="${ARTIFACTORY_ID:-artifactory-local}"
 
 function deploy_project {

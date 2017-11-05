@@ -213,7 +213,7 @@ export -f mockGradlew
 	assert_output --partial "cf cs cloudamqp lemur rabbitmq-github-webhook"
 	assert_output --partial "cf delete -f mysql-github-webhook"
 	assert_output --partial "cf delete-service -f mysql-github-webhook"
-	assert_output --partial "cf cs p-mysql 100mb mysql-github-webhook"
+	assert_output --partial "cf cs p.mysql 100mb mysql-github-webhook"
 	# Pushing services
 	# Eureka
 	assert_output --partial "cf delete -f eureka-github-webhook"
@@ -300,7 +300,7 @@ export -f mockGradlew
 	assert_output --partial "cf cs cloudamqp lemur rabbitmq-github-webhook"
 	assert_output --partial "cf delete -f mysql-github-webhook"
 	assert_output --partial "cf delete-service -f mysql-github-webhook"
-	assert_output --partial "cf cs p-mysql 100mb mysql-github-webhook"
+	assert_output --partial "cf cs p.mysql 100mb mysql-github-webhook"
 	# Pushing services
 	# Eureka
 	assert_output --partial "cf delete -f eureka-github-webhook"
@@ -555,7 +555,7 @@ export -f mockGradlew
 	assert_output --partial "cf cs cloudamqp lemur github-rabbitmq"
 	refute_output --partial "cf delete -f mysql-github"
 	refute_output --partial "cf delete-service -f mysql-github"
-	assert_output --partial "cf cs p-mysql 100mb mysql-github"
+	assert_output --partial "cf cs p.mysql 100mb mysql-github"
 	# Pushing services
 	# Eureka
 	refute_output --partial "cf delete -f github-eureka"
@@ -631,7 +631,7 @@ export -f mockGradlew
 	assert_output --partial "cf cs cloudamqp lemur github-rabbitmq"
 	refute_output --partial "cf delete -f mysql-github"
 	refute_output --partial "cf delete-service -f mysql-github"
-	assert_output --partial "cf cs p-mysql 100mb mysql-github"
+	assert_output --partial "cf cs p.mysql 100mb mysql-github"
 	# Pushing services
 	# Eureka
 	refute_output --partial "cf delete -f github-eureka"
