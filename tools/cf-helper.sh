@@ -224,7 +224,7 @@ case $1 in
 		echo "Installing rabbitmq"
 		cf cs p-rabbitmq standard github-rabbitmq || cf cs cloudamqp lemur github-rabbimq
 		echo "Installing mysql"
-		cf cs p.mysql 512mb mysql-github-analytics || cf cs p.mysql 100mb mysql-github-analytics
+		cf cs p.mysql db-medium mysql-github-analytics || cf cs p.mysql db-small mysql-github-analytics
 		echo "Downloading eureka jar from ${ARTIFACTORY_URL}"
 		mkdir -p build
 		curl "${ARTIFACTORY_URL}/com/example/eureka/github-eureka/0.0.1.M1/github-eureka-0.0.1.M1.jar" -o "build/eureka.jar" --fail || echo "Failed to download the JAR"

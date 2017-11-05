@@ -200,8 +200,8 @@ function deployMySql() {
 	foundApp=$(serviceExists "mysql" "${serviceName}")
 	if [[ "${foundApp}" == "false" ]]; then
 		local hostname="${hostname}-${PAAS_HOSTNAME_UUID}"
-		(cf cs p.mysql 100mb "${serviceName}" && echo "Started MySQL") ||
-		(cf cs p.mysql 512mb "${serviceName}" && echo "Started MySQL for PCF Dev")
+		(cf cs p.mysql db-small "${serviceName}" && echo "Started MySQL") ||
+		(cf cs p.mysql db-medium "${serviceName}" && echo "Started MySQL for PCF Dev")
 	else
 		echo "Service [${serviceName}] already started"
 	fi
