@@ -257,7 +257,7 @@ function deployAppWithName() {
 	local lowerCaseAppName
 	lowerCaseAppName=$(toLowerCase "${appName}")
 	local hostname="${lowerCaseAppName}"
-	local memory="${APP_MEMORY_LIMIT:-256m}"
+	local memory="${APP_MEMORY_LIMIT:-512m}"
 	# TODO: This is very JVM specific
 	local buildPackUrl="${JAVA_BUILDPACK_URL:-https://github.com/cloudfoundry/java-buildpack.git#v3.8.1}"
 	if [[ "${PAAS_HOSTNAME_UUID}" != "" ]]; then
