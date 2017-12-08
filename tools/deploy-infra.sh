@@ -23,7 +23,8 @@ if [[ -z "${POTENTIAL_DOCKER_HOST}" ]]; then
     POTENTIAL_DOCKER_HOST="localhost"
 fi
 
-ARTIFACTORY_URL="${ARTIFACTORY_URL:-http://admin:password@${POTENTIAL_DOCKER_HOST}:8081/artifactory/example-repo-local}"
+ARTIFACTORY_URL="${ARTIFACTORY_URL:-http://build:5y9X#z{j@${POTENTIAL_DOCKER_HOST}:8080/artifactory/example-repo-local/}"
+# ARTIFACTORY_URL="${ARTIFACTORY_URL:-http://epereira:temp123@${POTENTIAL_DOCKER_HOST}:/artifactory/vms-SNAPSHOT/"
 ARTIFACTORY_ID="${ARTIFACTORY_ID:-artifactory-local}"
 
 function deploy_project {
